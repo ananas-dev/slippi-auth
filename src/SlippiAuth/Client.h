@@ -17,7 +17,7 @@ namespace SlippiAuth {
 
     class Client
     {
-        Client(int id);
+        explicit Client(int id);
 
         void Connect();
 

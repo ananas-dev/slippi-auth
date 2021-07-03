@@ -91,6 +91,9 @@ target_precompile_headers(SlippiAuth PRIVATE "${SRC_DIR}/pch.h")
 # Include directories
 target_include_directories(SlippiAuth PUBLIC "${SRC_DIR}")
 
+# Dependencies includes dir
+target_include_directories(SlippiAuth PUBLIC "${enet_SOURCE_DIR}/include")
+
 # Link dependencies
 target_link_libraries(SlippiAuth PRIVATE
         cpr::cpr
