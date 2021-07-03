@@ -12,7 +12,7 @@ namespace SlippiAuth {
 
         for (int i = 0; i < size; i++)
         {
-            m_Ready.emplace_back(Client(i));
+            m_Ready.emplace_back(i);
         }
     }
 
@@ -22,6 +22,8 @@ namespace SlippiAuth {
         {
             if (thread.joinable())
                 thread.join();
+            else
+                CORE_ERROR("Cannot join thread");
         }
     }
 
@@ -41,7 +43,7 @@ namespace SlippiAuth {
 
         // Set the connect code which the client will connect to
         client.SetTargetConnectCode(connectCode);
-        m_ThreadInUse.emplace_back(std::thread(&Client::Start, std::ref(client)));
+        m_ThreadInUse.emplace_back(&Client::Start, std::ref(client));
     }
 
 }

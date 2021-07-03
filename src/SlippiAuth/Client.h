@@ -42,7 +42,8 @@ namespace SlippiAuth {
 
         const std::string m_AppVersion = "2.3.1";
 
-        json m_Config= {};
+        json m_Config = {};
+
         bool m_Connected = false;
 
         const std::string m_ServerHost = "mm.slippi.gg";

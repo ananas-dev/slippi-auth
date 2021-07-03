@@ -22,5 +22,4 @@ namespace SlippiAuth {
         s_CoreLogger->set_level(spdlog::level::trace);
     }
 
-
 }

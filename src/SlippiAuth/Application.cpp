@@ -11,4 +11,5 @@ int main()
 
     SlippiAuth::ClientPool pool(poolSize);
     pool.StartClient("NNAS#975");
+    pool.StartClient("FLCD#407");
 }

@@ -7,7 +7,6 @@ namespace SlippiAuth {
         m_Id = id;
         m_Config = ClientConfig::Get()[id];
         m_State = ProcessState::Idle;
-
     }
 
     Client::~Client()
