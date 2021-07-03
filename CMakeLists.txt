@@ -38,8 +38,8 @@ FetchContent_Declare(spdlog
 FetchContent_MakeAvailable(spdlog)
 
 FetchContent_Declare(enet
-        GIT_REPOSITORY https://github.com/lsalzman/enet
-        GIT_TAG v1.3.7
+        GIT_REPOSITORY https://github.com/zpl-c/enet
+        GIT_TAG v2.3.0
         )
 
 FetchContent_MakeAvailable(enet)
@@ -92,12 +92,13 @@ target_precompile_headers(SlippiAuth PRIVATE "${SRC_DIR}/pch.h")
 target_include_directories(SlippiAuth PUBLIC "${SRC_DIR}")
 
 # Dependencies includes dir
-target_include_directories(SlippiAuth PUBLIC "${enet_SOURCE_DIR}/include")
+target_include_directories(SlippiAuth PUBLIC
+        "${enet_SOURCE_DIR}/include"
+        )
 
 # Link dependencies
 target_link_libraries(SlippiAuth PRIVATE
         cpr::cpr
-        nlohmann_json
+        nlohmann_json::nlohmann_json
         spdlog::spdlog
-        enet
         )
