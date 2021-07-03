@@ -4,21 +4,15 @@ namespace SlippiAuth {
 
     ClientPool::ClientPool(size_t size)
     {
-        // Initialize ENet
-        if (enet_initialize() != 0)
-        {
-            CORE_ERROR("An error occurred while initializing ENet!");
-        }
-
         for (int i = 0; i < size; i++)
         {
-            m_Ready.emplace_back(i);
+            m_Clients.emplace_back(i);
         }
     }
 
     ClientPool::~ClientPool()
     {
-        for (auto& thread : m_ThreadInUse)
+        for (auto& thread : m_Threads)
         {
             if (thread.joinable())
                 thread.join();
@@ -27,23 +21,21 @@ namespace SlippiAuth {
         }
     }
 
-    void ClientPool::StartClient(const std::string& connectCode)
+    Client& ClientPool::FindReadyClient()
     {
-        if (m_Ready.empty())
+        for (auto& client : m_Clients)
         {
-            CORE_ERROR("Client limit reached");
-            return;
+            if (client.IsReady())
+                return client;
         }
-
-        // Move an available client into the InUse stack
-        m_InUse.push_back(std::move(m_Ready.back()));
-        m_Ready.pop_back();
-
-        auto& client = m_InUse.back();
-
-        // Set the connect code which the client will connect to
-        client.SetTargetConnectCode(connectCode);
-        m_ThreadInUse.emplace_back(&Client::Start, std::ref(client));
+        CORE_ERROR("No clients are ready");
     }
 
+    void ClientPool::StartClient(const std::string& connectCode)
+    {
+        auto& client = FindReadyClient();
+        // Set the connect code which the client will connect to
+        client.SetTargetConnectCode(connectCode);
+        m_Threads.emplace_back(&Client::Start, std::ref(client));
+    }
 }

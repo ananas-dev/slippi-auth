@@ -10,15 +10,13 @@ namespace SlippiAuth {
         explicit ClientPool(size_t size);
         ~ClientPool();
 
-        size_t GetReadyClientNumber() { return m_Ready.size(); };
-        size_t GetClientNumber() { return m_Ready.size() + m_InUse.size(); }
+        Client& FindReadyClient();
 
         void StartClient(const std::string& connectCode);
 
     private:
-        std::vector<Client> m_Ready;
-        std::vector<Client> m_InUse;
-        std::vector<std::thread> m_ThreadInUse;
+        std::vector<Client> m_Clients;
+        std::vector<std::thread> m_Threads;
     };
 
 }

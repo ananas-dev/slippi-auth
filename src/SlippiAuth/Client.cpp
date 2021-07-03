@@ -21,8 +21,15 @@ namespace SlippiAuth {
 
     void Client::Start()
     {
+        // Initialize ENet
+        if (enet_initialize() != 0)
+        {
+            CORE_ERROR("An error occurred while initializing ENet!");
+        }
+
+        m_Ready = false;
         m_Connected = false;
-        CLIENT_INFO(m_Id, "Starting AUTH for {}", m_TargetConnectCode);
+        CLIENT_INFO(m_Id, "Starting {} for {}", m_Config["connectCode"].get<std::string>(), m_TargetConnectCode);
 
         m_State = ProcessState::Initializing;
 

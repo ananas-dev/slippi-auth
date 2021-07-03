@@ -24,6 +24,7 @@ namespace SlippiAuth {
 
         void SetTargetConnectCode(const std::string& connectCode);
 
+        bool IsReady() const { return m_Ready; }
         void Start();
 
         bool IsSearching();
@@ -33,6 +34,8 @@ namespace SlippiAuth {
 
         void Connect();
     private:
+        bool m_Ready = true;
+
         uint32_t m_Id;
 
         // Connect code the client has to connect to

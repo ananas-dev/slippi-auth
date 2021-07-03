@@ -10,5 +10,6 @@
 #include <thread>
 #include <stack>
 #include <chrono>
+#include <atomic>
 
 #include "SlippiAuth/Log.h"

@@ -1,5 +1,9 @@
 #include "ClientConfig.h"
 #include "ClientPool.h"
+#include "Client.h"
+
+using namespace SlippiAuth;
+using namespace std::chrono_literals;
 
 int main()
 {
@@ -11,5 +15,5 @@ int main()
 
     SlippiAuth::ClientPool pool(poolSize);
     pool.StartClient("NNAS#975");
-    pool.StartClient("FLCD#407");
+    //pool.StartClient("FLCD#407");
 }
