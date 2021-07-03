@@ -1,5 +1,4 @@
 #include "ClientConfig.h"
-#include "Client.h"
 #include "ClientPool.h"
 
 int main()

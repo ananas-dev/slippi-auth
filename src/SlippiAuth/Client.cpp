@@ -1,4 +1,3 @@
-#define ENET_IMPLEMENTATION
 #include "Client.h"
 
 namespace SlippiAuth {
@@ -9,21 +8,22 @@ namespace SlippiAuth {
         m_Config = ClientConfig::Get()[id];
         m_State = ProcessState::Idle;
 
-        // TODO: move initialization elsewhere
-        if (enet_initialize() != 0)
-        {
-            CLIENT_ERROR(m_Id, "An error occurred while initializing ENet!");
-        }
     }
 
     Client::~Client()
-    = default;
+    {
+        m_State = ProcessState::ErrorEncountered;
+    }
 
-    void Client::Start(const std::string& connectCode)
+    void Client::SetTargetConnectCode(const std::string& connectCode)
+    {
+        m_TargetConnectCode = connectCode;
+    }
+
+    void Client::Start()
     {
         m_Connected = false;
-        m_ConnectCode = connectCode;
-        CLIENT_INFO(m_Id, "Starting AUTH for {}", m_ConnectCode);
+        CLIENT_INFO(m_Id, "Starting AUTH for {}", m_TargetConnectCode);
 
         m_State = ProcessState::Initializing;
 
@@ -31,16 +31,12 @@ namespace SlippiAuth {
         {
             switch(m_State)
             {
-                case ProcessState::Initializing:
-                    Connect();
-                    break;
+            case ProcessState::Initializing:
+                Connect();
+                break;
 
-                    /*
-                     * IMPLEMENT THE REST
-                     */
-
-                default:
-                    m_State = ProcessState::ErrorEncountered;
+            default:
+                m_State = ProcessState::ErrorEncountered;
             }
         }
     }
@@ -96,6 +92,8 @@ namespace SlippiAuth {
                 case ENET_EVENT_TYPE_DISCONNECT:
                     // Return -2 code to indicate we have lost connection to the server
                     return -2;
+                default:
+                    return -1;
             }
         }
 
@@ -127,7 +125,7 @@ namespace SlippiAuth {
         }
 
         ENetAddress addr;
-        enet_address_set_host_new(&addr, m_ServerHost.c_str());
+        enet_address_set_host(&addr, m_ServerHost.c_str());
         addr.port = m_ServerPort;
 
         m_Server = enet_host_connect(m_Client, &addr, 3, 0);
@@ -163,8 +161,8 @@ namespace SlippiAuth {
 
         // Buffering the connect code
         std::vector<uint8_t> connectCodeBuf;
-        connectCodeBuf.insert(connectCodeBuf.end(),  m_ConnectCode.begin(),
-                m_ConnectCode.end());
+        connectCodeBuf.insert(connectCodeBuf.end(),  m_TargetConnectCode.begin(),
+                m_TargetConnectCode.end());
 
         json request = {
                 {"type", "create-ticket"},

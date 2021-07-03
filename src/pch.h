@@ -9,5 +9,6 @@
 #include <map>
 #include <thread>
 #include <stack>
+#include <chrono>
 
 #include "SlippiAuth/Log.h"

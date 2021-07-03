@@ -4,9 +4,24 @@ namespace SlippiAuth {
 
     ClientPool::ClientPool(size_t size)
     {
+        // Initialize ENet
+        if (enet_initialize() != 0)
+        {
+            CORE_ERROR("An error occurred while initializing ENet!");
+        }
+
         for (int i = 0; i < size; i++)
         {
-            m_Ready.emplace(Client(i));
+            m_Ready.emplace_back(Client(i));
+        }
+    }
+
+    ClientPool::~ClientPool()
+    {
+        for (auto& thread : m_ThreadInUse)
+        {
+            if (thread.joinable())
+                thread.join();
         }
     }
 
@@ -19,13 +34,14 @@ namespace SlippiAuth {
         }
 
         // Move an available client into the InUse stack
-        m_InUse.push(std::move(m_Ready.top()));
-        m_Ready.pop();
+        m_InUse.push_back(std::move(m_Ready.back()));
+        m_Ready.pop_back();
 
-        auto& client = m_InUse.top();
+        auto& client = m_InUse.back();
 
-        // TODO: Run this on another thread
-        client.Start(connectCode);
+        // Set the connect code which the client will connect to
+        client.SetTargetConnectCode(connectCode);
+        m_ThreadInUse.emplace_back(std::thread(&Client::Start, std::ref(client)));
     }
 
 }

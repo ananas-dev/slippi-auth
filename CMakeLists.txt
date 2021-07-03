@@ -38,8 +38,8 @@ FetchContent_Declare(spdlog
 FetchContent_MakeAvailable(spdlog)
 
 FetchContent_Declare(enet
-        GIT_REPOSITORY https://github.com/zpl-c/enet
-        GIT_TAG v2.3.0
+        GIT_REPOSITORY https://github.com/lsalzman/enet
+        GIT_TAG v1.3.17
         )
 
 FetchContent_MakeAvailable(enet)
@@ -102,4 +102,5 @@ target_link_libraries(SlippiAuth PRIVATE
         cpr::cpr
         nlohmann_json::nlohmann_json
         spdlog::spdlog
+        enet
         )

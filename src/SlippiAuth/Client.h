@@ -1,6 +1,6 @@
 #pragma once
 
-#include <enet.h>
+#include <enet/enet.h>
 
 #include "ClientConfig.h"
 
@@ -22,7 +22,9 @@ namespace SlippiAuth {
         explicit Client(uint32_t id);
         ~Client();
 
-        void Start(const std::string& connectCode);
+        void SetTargetConnectCode(const std::string& connectCode);
+
+        void Start();
 
         bool IsSearching();
 
@@ -30,14 +32,11 @@ namespace SlippiAuth {
         int ReceiveMessage(json &msg, int timeoutMs);
 
         void Connect();
-
-    private:
-        //static int ENET_CALLBACK InterceptCallback(ENetHost* host, ENetEvent* event);
     private:
         uint32_t m_Id;
 
         // Connect code the client has to connect to
-        std::string m_ConnectCode;
+        std::string m_TargetConnectCode;
 
         ProcessState m_State;
 
