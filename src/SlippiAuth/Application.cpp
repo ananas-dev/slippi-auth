@@ -1,4 +1,6 @@
 #include "ClientConfig.h"
+#include "Client.h"
+#include "ClientPool.h"
 
 int main()
 {
@@ -8,5 +10,6 @@ int main()
     size_t poolSize = SlippiAuth::ClientConfig::Get().size();
     SlippiAuth::Log::Init(poolSize);
 
-    std::cout << SlippiAuth::ClientConfig::Get()[0] << std::endl;
+    SlippiAuth::ClientPool pool(poolSize);
+    pool.StartClient("NNAS#975");
 }

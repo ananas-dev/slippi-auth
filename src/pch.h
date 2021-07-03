@@ -7,5 +7,7 @@
 #include <fstream>
 #include <sstream>
 #include <map>
+#include <thread>
+#include <stack>
 
 #include "SlippiAuth/Log.h"

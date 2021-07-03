@@ -80,6 +80,7 @@ file(GLOB SRCS
         "${SRC_DIR}/SlippiAuth/Log.cpp"
         "${SRC_DIR}/SlippiAuth/ClientConfig.cpp"
         "${SRC_DIR}/SlippiAuth/Client.cpp"
+        "${SRC_DIR}/SlippiAuth/ClientPool.cpp"
         )
 
 
