@@ -7,8 +7,8 @@ set(SRC_DIR "${CMAKE_SOURCE_DIR}/src")
 set(VENDOR_DIR "${CMAKE_SOURCE_DIR}/vendor")
 
 # Copy clients.json into the bin dir
-if (EXISTS "${CMAKE_BINARY_DIR}/clients.json")
-    configure_file("${CMAKE_SOURCE_DIR}/clients.json" "${CMAKE_BINARY_DIR}/clients.json")
+if (EXISTS "${CMAKE_SOURCE_DIR}/clients.json")
+    configure_file("${CMAKE_SOURCE_DIR}/clients.json" "${CMAKE_BINARY_DIR}/clients.json" COPYONLY)
 endif()
 
 # Fetch dependencies
