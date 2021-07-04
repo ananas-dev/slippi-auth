@@ -12,6 +12,7 @@ namespace SlippiAuth {
     Client::~Client()
     {
         m_State = ProcessState::ErrorEncountered;
+        TerminateConnection();
     }
 
     void Client::SetTargetConnectCode(const std::string& connectCode)
@@ -29,27 +30,36 @@ namespace SlippiAuth {
 
         m_Ready = false;
         m_Connected = false;
-        CLIENT_INFO(m_Id, "Starting {} for {}", m_Config["connectCode"].get<std::string>(), m_TargetConnectCode);
+        CLIENT_INFO(m_Id, "Starting [{}]...", m_Config["connectCode"].get<std::string>());
 
         m_State = ProcessState::Initializing;
+        m_Searching = true;
 
-        while (IsSearching())
+        while (m_Searching)
         {
             switch(m_State)
             {
-            case ProcessState::Initializing:
-                Connect();
-                break;
+                case ProcessState::Initializing:
+                    StartSearching();
+                    break;
+
+                case ProcessState::Matchmaking:
+                    HandleSearching();
+                    break;
+
+                case ProcessState::ConnectionSuccess:
+                    TerminateConnection();
+                    m_Searching = false;
+                    break;
 
             default:
                 m_State = ProcessState::ErrorEncountered;
+
             }
         }
-    }
 
-    bool Client::IsSearching()
-    {
-        return m_SearchingStates.count(m_State) != 0;
+        m_State = ProcessState::Idle;
+        m_Ready = true;
     }
 
     void Client::SendMessage(const json& msg)
@@ -107,7 +117,50 @@ namespace SlippiAuth {
 
     }
 
-    void Client::Connect()
+    void Client::DisconnectFromServer()
+    {
+        m_Connected = false;
+
+        if (m_Server)
+            enet_peer_disconnect(m_Server, 0);
+        else
+            return;
+
+        ENetEvent netEvent;
+        while (enet_host_service(m_Client, &netEvent, 3000) > 0)
+        {
+            switch (netEvent.type)
+            {
+            case ENET_EVENT_TYPE_RECEIVE:
+                enet_packet_destroy(netEvent.packet);
+                break;
+            case ENET_EVENT_TYPE_DISCONNECT:
+                m_Server = nullptr;
+                return;
+            default:
+                break;
+            }
+        }
+
+        // didn't disconnect gracefully force disconnect
+        enet_peer_reset(m_Server);
+        m_Server = nullptr;
+    }
+
+    void Client::TerminateConnection()
+    {
+        // Disconnect from server
+        DisconnectFromServer();
+
+        // Destroy client
+        if (m_Client)
+        {
+            enet_host_destroy(m_Client);
+            m_Client = nullptr;
+        }
+    }
+
+    void Client::StartSearching()
     {
         int retryCount = 0;
         while (m_Client == nullptr && retryCount < 15)
@@ -204,8 +257,54 @@ namespace SlippiAuth {
         }
 
         m_State = ProcessState::Matchmaking;
-        CLIENT_INFO(m_Id, "The ticket request succeeded");
+        CLIENT_INFO(m_Id, "Searching [{}]...", m_TargetConnectCode);
     }
 
+    void Client::HandleSearching()
+    {
+        // Get response from the server
+        json getResp;
+        int rcvRes = ReceiveMessage(getResp, 2000);
+
+        if (rcvRes == -1) { return; }
+        else if (rcvRes != 0)
+        {
+            // Only other code is -2 meaning the server dies probably
+            CLIENT_ERROR(m_Id, "Lost connection to the mm server");
+            m_State = ProcessState::ErrorEncountered;
+            return;
+        }
+
+        std::string respType = getResp["type"];
+        if (respType != "get-ticket-resp")
+        {
+            CLIENT_ERROR(m_Id, "Received incorrect response from ticket");
+            m_State = ProcessState::ErrorEncountered;
+            return;
+        }
+
+        std::string err = getResp.value("error", "");
+        std::string latestVersion = getResp.value("latestVersion", "");
+        if (err.length() > 0)
+        {
+            if (!latestVersion.empty())
+            {
+                CLIENT_ERROR(m_Id, "Update slippi version to: {}", latestVersion);
+            }
+
+            CLIENT_ERROR(m_Id, "Received error from the server for get ticket");
+            m_State = ProcessState::ErrorEncountered;
+            return;
+        }
+
+        auto targetPlayer = getResp["players"][0];
+
+        if (targetPlayer["connectCode"] == m_TargetConnectCode)
+        {
+            m_State = ProcessState::ConnectionSuccess;
+            CLIENT_INFO(m_Id, "Successfully authenticated!");
+            return;
+        }
+    }
 }
 
