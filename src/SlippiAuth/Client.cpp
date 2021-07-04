@@ -22,12 +22,6 @@ namespace SlippiAuth {
 
     void Client::Start()
     {
-        // Initialize ENet
-        if (enet_initialize() != 0)
-        {
-            CORE_ERROR("An error occurred while initializing ENet!");
-        }
-
         m_Ready = false;
         m_Connected = false;
         CLIENT_INFO(m_Id, "Starting [{}]...", m_Config["connectCode"].get<std::string>());
@@ -296,15 +290,14 @@ namespace SlippiAuth {
             return;
         }
 
-        auto players = getResp["players"];
-
-        // Check if either player has the target connect code
-        if (players[0]["connectCode"] == m_TargetConnectCode ||
-            players[1]["connectCode"] == m_TargetConnectCode)
+        for (auto& player : getResp["players"])
         {
-            m_State = ProcessState::ConnectionSuccess;
-            CLIENT_INFO(m_Id, "Successfully authenticated!");
-            return;
+            if (player["connectCode"] == m_TargetConnectCode)
+            {
+                m_State = ProcessState::ConnectionSuccess;
+                CLIENT_INFO(m_Id, "Successfully authenticated!");
+                return;
+            }
         }
     }
 }

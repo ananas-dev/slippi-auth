@@ -13,7 +13,10 @@ int main()
     size_t poolSize = SlippiAuth::ClientConfig::Get().size();
     SlippiAuth::Log::Init(poolSize);
 
+
     SlippiAuth::ClientPool pool(poolSize);
     pool.StartClient("NNAS#975");
-    //pool.StartClient("FLCD#407");
+    std::this_thread::sleep_for(1ms);
+    pool.StartClient("FLCD#407");
+
 }

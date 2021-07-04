@@ -14,12 +14,6 @@ endif()
 # Fetch dependencies
 include(FetchContent)
 
-FetchContent_Declare(cpr
-        GIT_REPOSITORY https://github.com/whoshuu/cpr.git
-        GIT_TAG c8d33915dbd88ad6c92b258869b03aba06587ff9)
-
-FetchContent_MakeAvailable(cpr)
-
 FetchContent_Declare(json
         GIT_REPOSITORY https://github.com/nlohmann/json.git
         GIT_TAG v3.9.1)
@@ -48,8 +42,6 @@ FetchContent_MakeAvailable(enet)
 file(GLOB SRCS
         //github.com/whoshuu/cpr.git
         GIT_TAG c8d33915dbd88ad6c92b258869b03aba06587ff9)
-
-FetchContent_MakeAvailable(cpr)
 
 FetchContent_Declare(json
         GIT_REPOSITORY https://github.com/nlohmann/json.git
@@ -81,6 +73,7 @@ file(GLOB SRCS
         "${SRC_DIR}/SlippiAuth/ClientConfig.cpp"
         "${SRC_DIR}/SlippiAuth/Client.cpp"
         "${SRC_DIR}/SlippiAuth/ClientPool.cpp"
+        "${SRC_DIR}/SlippiAuth/WebSocketServer.cpp"
         )
 
 
@@ -99,7 +92,6 @@ target_include_directories(SlippiAuth PUBLIC
 
 # Link dependencies
 target_link_libraries(SlippiAuth PRIVATE
-        cpr::cpr
         nlohmann_json::nlohmann_json
         spdlog::spdlog
         enet

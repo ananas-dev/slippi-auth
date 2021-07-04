@@ -4,6 +4,12 @@ namespace SlippiAuth {
 
     ClientPool::ClientPool(size_t size)
     {
+        // Initialize ENet
+        if (enet_initialize() != 0)
+        {
+            CORE_ERROR("An error occurred while initializing ENet!");
+        }
+
         for (int i = 0; i < size; i++)
         {
             m_Clients.emplace_back(i);
