@@ -54,7 +54,6 @@ namespace SlippiAuth {
 
             default:
                 m_State = ProcessState::ErrorEncountered;
-
             }
         }
 
@@ -297,9 +296,11 @@ namespace SlippiAuth {
             return;
         }
 
-        auto targetPlayer = getResp["players"][0];
+        auto players = getResp["players"];
 
-        if (targetPlayer["connectCode"] == m_TargetConnectCode)
+        // Check if either player has the target connect code
+        if (players[0]["connectCode"] == m_TargetConnectCode ||
+            players[1]["connectCode"] == m_TargetConnectCode)
         {
             m_State = ProcessState::ConnectionSuccess;
             CLIENT_INFO(m_Id, "Successfully authenticated!");
