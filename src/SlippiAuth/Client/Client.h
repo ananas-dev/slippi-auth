@@ -1,8 +1,9 @@
 #pragma once
 
-#include <enet/enet.h>
-
 #include "ClientConfig.h"
+#include "SlippiAuth/Core.h"
+
+#include <enet/enet.h>
 
 namespace SlippiAuth {
 
@@ -28,6 +29,11 @@ namespace SlippiAuth {
         [[nodiscard]] Json& GetConfig() { return m_Config; }
 
         void Start();
+
+        inline void SetEventCallback(const EventCallbackFn& callback)
+        {
+            m_EventCallback = callback;
+        }
 
     private:
         void SendMessage(const Json& msg);
@@ -62,6 +68,8 @@ namespace SlippiAuth {
 
         ENetHost* m_Client = nullptr;
         ENetPeer* m_Server = nullptr;
+
+        EventCallbackFn m_EventCallback;
     };
 
 }

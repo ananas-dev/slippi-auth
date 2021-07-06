@@ -2,7 +2,7 @@
 
 namespace SlippiAuth {
 
-    ClientPool::ClientPool(size_t size)
+    ClientPool::ClientPool()
     {
         // Initialize ENet
         if (enet_initialize() != 0)
@@ -10,9 +10,9 @@ namespace SlippiAuth {
             CORE_ERROR("An error occurred while initializing ENet!");
         }
 
-        m_Clients.reserve(size);
-        m_Threads.reserve(size);
-        for (int i = 0; i < size; i++)
+        m_Clients.reserve(m_PoolSize);
+        m_Threads.reserve(m_PoolSize);
+        for (int i = 0; i < m_PoolSize; i++)
         {
             m_Clients.emplace_back(i);
         }
@@ -48,7 +48,7 @@ namespace SlippiAuth {
         return -1;
     }
 
-    Client& ClientPool::StartClient(const std::string& connectCode)
+    void ClientPool::StartClient(const std::string& connectCode)
     {
         uint64_t clientIndex = FindReadyClientIndex();
         if (clientIndex != -1)
@@ -58,8 +58,6 @@ namespace SlippiAuth {
             // Set the connect code which the client will connect to
             client.SetTargetConnectCode(connectCode);
             m_Threads.emplace_back(&Client::Start, std::ref(client));
-
-            return client;
         }
     }
 

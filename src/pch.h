@@ -12,4 +12,7 @@
 #include <chrono>
 #include <functional>
 
+#include <nlohmann/json.hpp>
+
 #include "SlippiAuth/Log.h"
+#include "SlippiAuth/Events/Event.h"

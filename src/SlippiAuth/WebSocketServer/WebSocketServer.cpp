@@ -4,13 +4,17 @@
 
 namespace SlippiAuth
 {
-    using Json = nlohmann::json;
 
     WebSocketServer::WebSocketServer()
     {
         m_Server.init_asio();
 
         // Handlers
+        m_Server.set_open_handler([this](auto&& hdl)
+        {
+            return OnOpen(std::forward<decltype(hdl)>(hdl));
+        });
+
         m_Server.set_message_handler([this](auto&& hdl, auto&& msg)
         {
             return OnMessage(std::forward<decltype(hdl)>(hdl), std::forward<decltype(msg)>(msg));
@@ -22,7 +26,10 @@ namespace SlippiAuth
 
         m_Server.listen(9002);
 
-        // Remove websocketpp logger
+        // Remove address-in-use exception when restarting
+        m_Server.set_reuse_addr(true);
+
+        // Set logger
         m_Server.set_access_channels(websocketpp::log::alevel::all);
         m_Server.clear_access_channels(websocketpp::log::alevel::frame_payload);
         m_Server.clear_access_channels(websocketpp::log::alevel::frame_header);
@@ -35,45 +42,48 @@ namespace SlippiAuth
             m_ServerThread.join();
     }
 
+    void WebSocketServer::OnOpen(const websocketpp::connection_hdl& hdl)
+    {
+        m_Hdls.push_back(hdl);
+    }
+
     void WebSocketServer::OnMessage(const websocketpp::connection_hdl& hdl, const MessagePtr& msg)
     {
-        WS_INFO("Websocket message received: {}", msg->get_payload());
-        Json response;
-
-        // Deserialize json
         try
         {
-            Json message = Json::parse(msg->get_payload());
+            WS_INFO("Websocket message received: {}", msg->get_payload());
 
-            if (message["type"] == "queue")
+            // Deserialize json
+            try
             {
-                if (message.contains("code"))
+                Json message = Json::parse(msg->get_payload());
+
+                if (message["type"] == "queue")
                 {
-                    WS_TRACE("Received code: {}", message["code"]);
-                    /*
-                     * DO WAIT FOR AN EVENT
-                     */
+                    if (message.contains("code"))
+                    {
+                        QueueEvent event(message["code"]);
+                        m_EventCallback(event);
+                    }
+                }
+                else if (message["type"] == "stopListening")
+                {
+                    m_Server.stop_listening();
+                }
+                else
+                {
+                    Json response = {{"type", "unknownCommand"}};
+                    m_Server.send(hdl, response.dump(), msg->get_opcode());
                 }
             }
-            else if (message["type"] == "stop-listening")
+            catch (const nlohmann::detail::parse_error& e)
             {
-                WS_INFO("TEST 1");
-                m_Server.stop_listening();
+                Json response = {{"type", "jsonErr"}};
+                m_Server.send(hdl, response.dump(), msg->get_opcode());
             }
-            else
-            {
-                response["type"] = "unknown-command";
-            }
-        }
-        catch (const nlohmann::detail::parse_error& e)
-        {
-            response["type"] = "jsonerr";
-        }
 
-        // Send the response
-        try
-        {
-            m_Server.send(hdl, response.dump(), msg->get_opcode());
+            // Send the response
+
         }
         catch (const websocketpp::exception& e)
         {
@@ -87,9 +97,17 @@ namespace SlippiAuth
         WS_ERROR("{} {}", con->get_ec(), con->get_ec().message());
     }
 
+
     void WebSocketServer::Start()
     {
         m_Server.start_accept();
         m_ServerThread = std::thread([this](){ m_Server.run(); });
     }
+
+    void WebSocketServer::SendMessage(const Json& message)
+    {
+        for (auto& hdl : m_Hdls)
+            m_Server.send(hdl, message.dump(), websocketpp::frame::opcode::text);
+    }
+
 }

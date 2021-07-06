@@ -1,6 +1,6 @@
 #pragma once
 
-#include <nlohmann/json.hpp>
+#include "SlippiAuth/Core.h"
 
 namespace SlippiAuth {
 

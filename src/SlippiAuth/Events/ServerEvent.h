@@ -2,12 +2,11 @@
 
 #include "Event.h"
 
-#include <utility>
-
 namespace SlippiAuth {
 
     class QueueEvent : public Event
     {
+    public:
         explicit QueueEvent(std::string connectCode)
             : m_ConnectCode(std::move(connectCode)) {};
 

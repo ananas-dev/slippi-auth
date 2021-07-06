@@ -1,5 +1,7 @@
 #include "SlippiAuth/Client/Client.h"
 
+#include "SlippiAuth/Events/ClientEvent.h"
+
 namespace SlippiAuth {
 
     Client::Client(uint32_t id) :
@@ -22,6 +24,10 @@ namespace SlippiAuth {
     {
         m_Ready = false;
         m_Connected = false;
+
+        ClientSpawnEvent event(m_Id, m_Config["connectCode"], m_TargetConnectCode);
+        m_EventCallback(event);
+
         CLIENT_INFO(m_Id, "Starting [{}]...", m_Config["connectCode"].get<std::string>());
 
         m_State = ProcessState::Initializing;

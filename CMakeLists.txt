@@ -57,7 +57,7 @@ file(GLOB SRCS
         "${SRC_DIR}/SlippiAuth/WebSocketServer/WebSocketServer.cpp"
         )
 
-add_executable(SlippiAuth ${SRCS})
+add_executable(SlippiAuth ${SRCS} src/SlippiAuth/main.cpp)
 
 # Precompiled header
 target_precompile_headers(SlippiAuth PRIVATE "${SRC_DIR}/pch.h")

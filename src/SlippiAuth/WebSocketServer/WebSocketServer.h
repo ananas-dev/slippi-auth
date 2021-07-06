@@ -1,8 +1,8 @@
 #pragma once
 
-#include "SlippiAuth/WebSocketServer/Util/LogBindings.h"
-#include "SlippiAuth/Client/ClientPool.h"
-#include "SlippiAuth/Client/ClientConfig.h"
+#include "Util/LogBindings.h"
+#include "SlippiAuth/Events/ServerEvent.h"
+#include "SlippiAuth/Core.h"
 
 #include <websocketpp/config/asio_no_tls.hpp>
 #include <websocketpp/server.hpp>
@@ -14,6 +14,8 @@ namespace SlippiAuth {
     class WebSocketServer
     {
     public:
+
+
         explicit WebSocketServer();
         ~WebSocketServer();
 
@@ -26,13 +28,23 @@ namespace SlippiAuth {
         typedef websocketpp::server<Config> Server;
         typedef Server::message_ptr MessagePtr;
 
+        void OnOpen(const websocketpp::connection_hdl& hdl);
         void OnMessage(const websocketpp::connection_hdl& hdl, const MessagePtr& msg);
         void OnFail(const websocketpp::connection_hdl& hdl);
 
+        void SendMessage(const Json& message);
+
+        inline void SetEventCallback(const EventCallbackFn& callback)
+        {
+            m_EventCallback = callback;
+        }
+
         void Start();
-    protected:
+    private:
+        std::vector<websocketpp::connection_hdl> m_Hdls;
         Server m_Server;
         std::thread m_ServerThread;
+        EventCallbackFn m_EventCallback;
     };
 
 }
