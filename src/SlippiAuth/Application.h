@@ -21,6 +21,7 @@ namespace SlippiAuth {
     private:
         bool OnQueue(QueueEvent& e);
         bool OnClientSpawn(ClientSpawnEvent& e);
+        bool OnAuthenticated(AuthenticatedEvent& e);
     private:
         ClientPool m_ClientPool;
         WebSocketServer m_WebSocketServer;

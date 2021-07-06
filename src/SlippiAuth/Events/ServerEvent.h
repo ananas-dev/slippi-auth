@@ -24,7 +24,6 @@ namespace SlippiAuth {
 
         EVENT_CLASS_CATEGORY(EventCategoryServer);
         EVENT_CLASS_TYPE(Queue);
-
     private:
         std::string m_ConnectCode;
     };

@@ -11,7 +11,7 @@
 
 namespace SlippiAuth {
 
-    Application::Application()
+    Application::Application() : m_WebSocketServer(9002)
     {
         for (auto& Client : m_ClientPool.GetClients())
         {
@@ -22,16 +22,16 @@ namespace SlippiAuth {
     }
 
     Application::~Application()
-    {
-    }
+    = default;
 
     void Application::OnEvent(Event& e)
     {
+        CORE_TRACE(e);
+
         EventDispatcher dispatcher(e);
         dispatcher.Dispatch<QueueEvent>(BIND_EVENT_FN(Application::OnQueue));
         dispatcher.Dispatch<ClientSpawnEvent>(BIND_EVENT_FN(Application::OnClientSpawn));
-
-        CORE_TRACE(e);
+        dispatcher.Dispatch<AuthenticatedEvent>(BIND_EVENT_FN(Application::OnAuthenticated));
     }
 
     [[noreturn]] void Application::Run()
@@ -48,7 +48,6 @@ namespace SlippiAuth {
 
     bool Application::OnClientSpawn(ClientSpawnEvent& e)
     {
-        // TODO: Move this logic in the server class
         Json message = {
             {"type", "queued"},
             {"id", e.GetClientId()},
@@ -60,5 +59,16 @@ namespace SlippiAuth {
         return true;
     }
 
-}
+    bool Application::OnAuthenticated(AuthenticatedEvent& e)
+    {
+        Json message = {
+            {"type", "authenticated"},
+            {"id", e.GetClientId()},
+            {"targetCode", e.GetTargetConnectCode()}
+        };
 
+        m_WebSocketServer.SendMessage(message);
+        return true;
+    }
+
+}

@@ -25,9 +25,6 @@ namespace SlippiAuth {
         m_Ready = false;
         m_Connected = false;
 
-        ClientSpawnEvent event(m_Id, m_Config["connectCode"], m_TargetConnectCode);
-        m_EventCallback(event);
-
         CLIENT_INFO(m_Id, "Starting [{}]...", m_Config["connectCode"].get<std::string>());
 
         m_State = ProcessState::Initializing;
@@ -37,19 +34,26 @@ namespace SlippiAuth {
         {
             switch(m_State)
             {
-                case ProcessState::Initializing:
-                    StartSearching();
-                    break;
-
-                case ProcessState::Matchmaking:
-                    HandleSearching();
-                    break;
-
-                case ProcessState::ConnectionSuccess:
-                    TerminateConnection();
-                    m_Searching = false;
-                    break;
-
+            case ProcessState::Initializing:
+            {
+                StartSearching();
+                ClientSpawnEvent clientSpawnEvent(m_Id, m_Config["connectCode"], m_TargetConnectCode);
+                m_EventCallback(clientSpawnEvent);
+                break;
+            }
+            case ProcessState::Matchmaking:
+            {
+                HandleSearching();
+                break;
+            }
+            case ProcessState::ConnectionSuccess:
+            {
+                AuthenticatedEvent authenticatedEvent(m_Id, m_TargetConnectCode);
+                m_EventCallback(authenticatedEvent);
+                TerminateConnection();
+                m_Searching = false;
+                break;
+            }
             default:
                 m_State = ProcessState::ErrorEncountered;
             }

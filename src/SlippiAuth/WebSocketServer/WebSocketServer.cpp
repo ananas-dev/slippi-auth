@@ -5,7 +5,7 @@
 namespace SlippiAuth
 {
 
-    WebSocketServer::WebSocketServer()
+    WebSocketServer::WebSocketServer(uint16_t port) : m_Port(port)
     {
         m_Server.init_asio();
 
@@ -24,7 +24,7 @@ namespace SlippiAuth
             return OnFail(std::forward<decltype(hdl)>(hdl));
         });
 
-        m_Server.listen(9002);
+        m_Server.listen(port);
 
         // Remove address-in-use exception when restarting
         m_Server.set_reuse_addr(true);
@@ -97,9 +97,9 @@ namespace SlippiAuth
         WS_ERROR("{} {}", con->get_ec(), con->get_ec().message());
     }
 
-
     void WebSocketServer::Start()
     {
+        WS_INFO("Server started on port {}", m_Port);
         m_Server.start_accept();
         m_ServerThread = std::thread([this](){ m_Server.run(); });
     }

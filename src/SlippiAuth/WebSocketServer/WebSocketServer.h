@@ -16,7 +16,7 @@ namespace SlippiAuth {
     public:
 
 
-        explicit WebSocketServer();
+        explicit WebSocketServer(uint16_t port);
         ~WebSocketServer();
 
         // Custom server config based on bundled asio config
@@ -43,6 +43,8 @@ namespace SlippiAuth {
     private:
         std::vector<websocketpp::connection_hdl> m_Hdls;
         Server m_Server;
+        uint16_t m_Port;
+
         std::thread m_ServerThread;
         EventCallbackFn m_EventCallback;
     };

@@ -8,9 +8,9 @@
 #include <sstream>
 #include <map>
 #include <thread>
-#include <stack>
 #include <chrono>
 #include <functional>
+#include <future>
 
 #include <nlohmann/json.hpp>
 

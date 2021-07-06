@@ -29,14 +29,6 @@ namespace SlippiAuth {
         }
     }
 
-    void ClientPool::FreeThread(uint32_t index)
-    {
-        if (m_Threads[index].joinable())
-            m_Threads[index].join();
-
-        m_Threads.erase(std::next(m_Threads.begin(), index));
-    }
-
     int64_t ClientPool::FindReadyClientIndex()
     {
         for (auto& client : m_Clients)
@@ -57,7 +49,30 @@ namespace SlippiAuth {
 
             // Set the connect code which the client will connect to
             client.SetTargetConnectCode(connectCode);
-            m_Threads.emplace_back(&Client::Start, std::ref(client));
+
+            std::lock_guard<std::mutex> lock(m_ThreadMutex);
+            m_Threads.emplace_back([&client, this]() {
+                    client.Start();
+                    // TODO: Make Async
+                    RemoveThread(std::this_thread::get_id());
+                    //std::async(RemoveThread, std::this_thread::get_id());
+                }
+            );
+        }
+    }
+
+    void ClientPool::RemoveThread(std::thread::id id)
+    {
+        std::lock_guard<std::mutex> lock(m_ThreadMutex);
+        auto iter = std::find_if(m_Threads.begin(), m_Threads.end(), [=](std::thread &t)
+        {
+            return (t.get_id() == id);
+        });
+
+        if (iter != m_Threads.end())
+        {
+            iter->detach();
+            m_Threads.erase(iter);
         }
     }
 

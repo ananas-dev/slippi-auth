@@ -10,6 +10,7 @@ namespace SlippiAuth {
         None = 0,
         Queue,
         ClientSpawn,
+        Authenticated,
     };
 
     enum EventCategory

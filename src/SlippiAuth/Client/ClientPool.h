@@ -11,8 +11,6 @@ namespace SlippiAuth {
         explicit ClientPool();
         ~ClientPool();
 
-        void FreeThread(uint32_t index);
-
         int64_t FindReadyClientIndex();
 
         void StartClient(const std::string& connectCode);
@@ -21,11 +19,13 @@ namespace SlippiAuth {
         {
             return m_Clients;
         }
-
+    private:
+        void RemoveThread(std::thread::id id);
     private:
         uint32_t m_PoolSize = ClientConfig::Get().size();
         std::vector<Client> m_Clients;
         std::vector<std::thread> m_Threads;
+        std::mutex m_ThreadMutex;
 
         // Default timeout is 5 min
         std::chrono::seconds m_Timeout = 3000s;
