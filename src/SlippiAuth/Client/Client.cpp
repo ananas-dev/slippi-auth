@@ -283,7 +283,7 @@ namespace SlippiAuth {
                 CLIENT_ERROR(m_Id, "Update slippi version to: {}", latestVersion);
             }
 
-            CLIENT_ERROR(m_Id, "Received error from the server for get ticket");
+            CLIENT_ERROR(m_Id, "Received error from the server for get ticket: {}", err);
             m_State = ProcessState::ErrorEncountered;
             return;
         }

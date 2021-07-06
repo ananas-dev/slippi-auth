@@ -21,8 +21,8 @@ int main()
     ClientPool pool(poolSize);
 
     // Start server
-    WebSocketServer server;
-    server.Start();
+    //WebSocketServer server;
+    //server.Start();
 
     // Start event loop
 }
