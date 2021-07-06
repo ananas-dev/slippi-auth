@@ -1,13 +1,11 @@
-#include "Client.h"
+#include "SlippiAuth/Client/Client.h"
 
 namespace SlippiAuth {
 
-    Client::Client(uint32_t id)
-    {
-        m_Id = id;
-        m_Config = ClientConfig::Get()[id];
-        m_State = ProcessState::Idle;
-    }
+    Client::Client(uint32_t id) :
+        m_Id(id),
+        m_Config(ClientConfig::Get()[id]),
+        m_State(ProcessState::Idle) {}
 
     Client::~Client()
     {
@@ -55,7 +53,7 @@ namespace SlippiAuth {
         m_Ready = true;
     }
 
-    void Client::SendMessage(const json& msg)
+    void Client::SendMessage(const Json& msg)
     {
         enet_uint32 flags = ENET_PACKET_FLAG_RELIABLE;
         uint8_t channelId = 0;
@@ -66,7 +64,7 @@ namespace SlippiAuth {
         enet_peer_send(m_Server, channelId, epac);
     }
 
-    int Client::ReceiveMessage(json &msg, int timeoutMs)
+    int Client::ReceiveMessage(Json &msg, int timeoutMs)
     {
         int hostServiceTimeoutMs = 250;
 
@@ -93,7 +91,7 @@ namespace SlippiAuth {
                     buf.insert(buf.end(), netEvent.packet->data, netEvent.packet->data + netEvent.packet->dataLength);
 
                     std::string str(buf.begin(), buf.end());
-                    msg = json::parse(str);
+                    msg = Json::parse(str);
 
                     enet_packet_destroy(netEvent.packet);
                     return 0;
@@ -216,7 +214,7 @@ namespace SlippiAuth {
         connectCodeBuf.insert(connectCodeBuf.end(),  m_TargetConnectCode.begin(),
                 m_TargetConnectCode.end());
 
-        json request = {
+        Json request = {
                 {"type", "create-ticket"},
                 {"user", {{"uid", m_Config["uid"]}, {"playKey", m_Config["playKey"]}}},
                 {"search", {{"mode", 2}, {"connectCode", connectCodeBuf}}},
@@ -226,7 +224,7 @@ namespace SlippiAuth {
 
         SendMessage(request);
 
-        json response;
+        Json response;
         int rcvRes = ReceiveMessage(response, 5000);
         if (rcvRes != 0)
         {
@@ -256,7 +254,7 @@ namespace SlippiAuth {
     void Client::HandleSearching()
     {
         // Get response from the server
-        json getResp;
+        Json getResp;
         int rcvRes = ReceiveMessage(getResp, 2000);
 
         if (rcvRes == -1) { return; }

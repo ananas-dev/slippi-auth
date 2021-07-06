@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Client.h"
+#include "SlippiAuth/Client/Client.h"
 
 namespace SlippiAuth {
 
@@ -10,9 +10,11 @@ namespace SlippiAuth {
         explicit ClientPool(size_t size);
         ~ClientPool();
 
-        Client& FindReadyClient();
+        void FreeThread(uint32_t index);
 
-        void StartClient(const std::string& connectCode);
+        int64_t FindReadyClientIndex();
+
+        Client& StartClient(const std::string& connectCode);
 
     private:
         std::vector<Client> m_Clients;

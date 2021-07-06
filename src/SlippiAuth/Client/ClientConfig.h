@@ -4,7 +4,7 @@
 
 namespace SlippiAuth {
 
-    using json = nlohmann::json;
+    using Json = nlohmann::json;
 
     class ClientConfig
     {
@@ -18,13 +18,13 @@ namespace SlippiAuth {
         }
 
         static void Load(const std::string& path) { GetInstance().ILoad(path); }
-        static const json& Get() { return GetInstance().IGet(); }
+        static const Json& Get() { return GetInstance().IGet(); }
     private:
         void ILoad(const std::string& path);
-        const json& IGet() { return m_Data; }
+        const Json& IGet() { return m_Data; }
         ClientConfig() = default;
 
-        json m_Data;
+        Json m_Data;
 
         static ClientConfig s_Instance;
     };

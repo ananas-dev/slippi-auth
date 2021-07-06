@@ -38,44 +38,24 @@ FetchContent_Declare(enet
 
 FetchContent_MakeAvailable(enet)
 
-# Files
-file(GLOB SRCS
-        //github.com/whoshuu/cpr.git
-        GIT_TAG c8d33915dbd88ad6c92b258869b03aba06587ff9)
-
-FetchContent_Declare(json
-        GIT_REPOSITORY https://github.com/nlohmann/json.git
-        GIT_TAG v3.9.1)
-
-FetchContent_GetProperties(json)
-if(NOT json_POPULATED)
-    FetchContent_Populate(json)
-    add_subdirectory(${json_SOURCE_DIR} ${json_BINARY_DIR} EXCLUDE_FROM_ALL)
-endif()
-
-FetchContent_Declare(spdlog
-        GIT_REPOSITORY https://github.com/gabime/spdlog
-        GIT_TAG v1.8.5
-)
-
-FetchContent_MakeAvailable(spdlog)
-
-FetchContent_Declare(enet
-        GIT_REPOSITORY https://github.com/lsalzman/enet
-        GIT_TAG v1.3.7
+FetchContent_Declare(websocketpp
+        GIT_REPOSITORY https://github.com/zaphoyd/websocketpp
+        GIT_TAG 56123c87598f8b1dd471be83ca841ceae07f95ba
         )
 
-FetchContent_MakeAvailable(enet)
+FetchContent_MakeAvailable(websocketpp)
+
+# Link boost for websocketpp
+#find_package(Boost REQUIRED COMPONENTS thread)
 
 file(GLOB SRCS
         "${SRC_DIR}/SlippiAuth/Application.cpp"
         "${SRC_DIR}/SlippiAuth/Log.cpp"
-        "${SRC_DIR}/SlippiAuth/ClientConfig.cpp"
-        "${SRC_DIR}/SlippiAuth/Client.cpp"
-        "${SRC_DIR}/SlippiAuth/ClientPool.cpp"
-        "${SRC_DIR}/SlippiAuth/WebSocketServer.cpp"
+        "${SRC_DIR}/SlippiAuth/Client/ClientConfig.cpp"
+        "${SRC_DIR}/SlippiAuth/Client/Client.cpp"
+        "${SRC_DIR}/SlippiAuth/Client/ClientPool.cpp"
+        "${SRC_DIR}/SlippiAuth/WebSocketServer/WebSocketServer.cpp"
         )
-
 
 add_executable(SlippiAuth ${SRCS})
 
@@ -88,10 +68,12 @@ target_include_directories(SlippiAuth PUBLIC "${SRC_DIR}")
 # Dependencies includes dir
 target_include_directories(SlippiAuth PUBLIC
         "${enet_SOURCE_DIR}/include"
+        "${websocketpp_SOURCE_DIR}"
         )
 
 # Link dependencies
 target_link_libraries(SlippiAuth PRIVATE
+        #Boost::thread
         nlohmann_json::nlohmann_json
         spdlog::spdlog
         enet

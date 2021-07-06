@@ -24,11 +24,14 @@ namespace SlippiAuth {
         void SetTargetConnectCode(const std::string& connectCode);
 
         [[nodiscard]] bool IsReady() const { return m_Ready; }
+        [[nodiscard]] uint32_t GetId() const { return m_Id; }
+        [[nodiscard]] Json& GetConfig() { return m_Config; }
+
         void Start();
 
     private:
-        void SendMessage(const json& msg);
-        int ReceiveMessage(json &msg, int timeoutMs);
+        void SendMessage(const Json& msg);
+        int ReceiveMessage(Json &msg, int timeoutMs);
 
         void DisconnectFromServer();
         void TerminateConnection();
@@ -47,7 +50,7 @@ namespace SlippiAuth {
 
         const std::string m_AppVersion = "2.3.1";
 
-        json m_Config = {};
+        Json m_Config = {};
 
         bool m_Connected = false;
         bool m_Searching = false;
