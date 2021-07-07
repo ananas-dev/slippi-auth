@@ -37,7 +37,7 @@ namespace SlippiAuth {
             case ProcessState::Initializing:
             {
                 StartSearching();
-                ClientSpawnEvent clientSpawnEvent(m_Id, m_Config["connectCode"], m_TargetConnectCode);
+                SearchingEvent clientSpawnEvent(m_Id, m_Config["connectCode"], m_TargetConnectCode);
                 m_EventCallback(clientSpawnEvent);
                 break;
             }
@@ -54,6 +54,12 @@ namespace SlippiAuth {
                 m_Searching = false;
                 break;
             }
+            case ProcessState::ErrorEncountered:
+            {
+                SlippiErrorEvent slippiErrorEvent(m_Id, m_TargetConnectCode);
+                m_EventCallback(slippiErrorEvent);
+            }
+
             default:
                 m_State = ProcessState::ErrorEncountered;
             }

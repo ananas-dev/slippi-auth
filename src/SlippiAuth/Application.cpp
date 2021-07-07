@@ -30,8 +30,9 @@ namespace SlippiAuth {
 
         EventDispatcher dispatcher(e);
         dispatcher.Dispatch<QueueEvent>(BIND_EVENT_FN(Application::OnQueue));
-        dispatcher.Dispatch<ClientSpawnEvent>(BIND_EVENT_FN(Application::OnClientSpawn));
+        dispatcher.Dispatch<SearchingEvent>(BIND_EVENT_FN(Application::OnClientSpawn));
         dispatcher.Dispatch<AuthenticatedEvent>(BIND_EVENT_FN(Application::OnAuthenticated));
+        dispatcher.Dispatch<SlippiErrorEvent>(BIND_EVENT_FN(Application::OnSlippiError));
     }
 
     [[noreturn]] void Application::Run()
@@ -46,10 +47,10 @@ namespace SlippiAuth {
         return true;
     }
 
-    bool Application::OnClientSpawn(ClientSpawnEvent& e)
+    bool Application::OnClientSpawn(SearchingEvent& e)
     {
         Json message = {
-            {"type", "queued"},
+            {"type", "searching"},
             {"id", e.GetClientId()},
             {"code", e.GetConnectCode()},
             {"targetCode", e.GetTargetConnectCode()}
@@ -63,6 +64,18 @@ namespace SlippiAuth {
     {
         Json message = {
             {"type", "authenticated"},
+            {"id", e.GetClientId()},
+            {"targetCode", e.GetTargetConnectCode()}
+        };
+
+        m_WebSocketServer.SendMessage(message);
+        return true;
+    }
+
+    bool Application::OnSlippiError(SlippiErrorEvent& e)
+    {
+        Json message = {
+            {"type", "slippiErr"},
             {"id", e.GetClientId()},
             {"targetCode", e.GetTargetConnectCode()}
         };

@@ -53,9 +53,9 @@ namespace SlippiAuth {
             std::lock_guard<std::mutex> lock(m_ThreadMutex);
             m_Threads.emplace_back([&client, this]() {
                     client.Start();
-                    // TODO: Make Async
-                    RemoveThread(std::this_thread::get_id());
-                    //std::async(RemoveThread, std::this_thread::get_id());
+                    std::thread([this] {
+                        RemoveThread(std::this_thread::get_id());
+                    }).detach();
                 }
             );
         }
@@ -71,7 +71,7 @@ namespace SlippiAuth {
 
         if (iter != m_Threads.end())
         {
-            iter->detach();
+            iter->join();
             m_Threads.erase(iter);
         }
     }

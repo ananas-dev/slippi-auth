@@ -9,8 +9,9 @@ namespace SlippiAuth {
     {
         None = 0,
         Queue,
-        ClientSpawn,
+        Searching,
         Authenticated,
+        SlippiError,
     };
 
     enum EventCategory

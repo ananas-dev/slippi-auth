@@ -20,8 +20,9 @@ namespace SlippiAuth {
         void OnEvent(Event& e);
     private:
         bool OnQueue(QueueEvent& e);
-        bool OnClientSpawn(ClientSpawnEvent& e);
+        bool OnClientSpawn(SearchingEvent& e);
         bool OnAuthenticated(AuthenticatedEvent& e);
+        bool OnSlippiError(SlippiErrorEvent& e);
     private:
         ClientPool m_ClientPool;
         WebSocketServer m_WebSocketServer;
