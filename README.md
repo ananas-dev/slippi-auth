@@ -2,12 +2,11 @@
 
 ## Build
 
-First install boost then:
-
 ```bash
 mkdir build
 cd build
 cmake ..
+make
 ./SlippiAuth
 ```
 
