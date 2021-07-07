@@ -52,12 +52,6 @@ FetchContent_Declare(asio
 
 FetchContent_MakeAvailable(asio)
 
-# Add asio
-add_library(asio INTERFACE)
-target_include_directories(asio INTERFACE ${asio_SOURCE_DIR}/asio/include)
-find_package(Threads)
-target_link_libraries(asio INTERFACE Threads::Threads)
-
 file(GLOB SRCS
         "${SRC_DIR}/SlippiAuth/Application.cpp"
         "${SRC_DIR}/SlippiAuth/Log.cpp"
@@ -79,6 +73,7 @@ target_include_directories(SlippiAuth PUBLIC "${SRC_DIR}")
 target_include_directories(SlippiAuth PUBLIC
         "${enet_SOURCE_DIR}/include"
         "${websocketpp_SOURCE_DIR}"
+        "${asio_SOURCE_DIR}/asio/include"
         )
 
 # Link dependencies
