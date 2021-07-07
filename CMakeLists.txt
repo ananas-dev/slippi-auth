@@ -45,8 +45,18 @@ FetchContent_Declare(websocketpp
 
 FetchContent_MakeAvailable(websocketpp)
 
-# Link boost for websocketpp
-#find_package(Boost REQUIRED COMPONENTS thread)
+FetchContent_Declare(asio
+        GIT_REPOSITORY https://github.com/chriskohlhoff/asio
+        GIT_TAG asio-1-18-2
+        )
+
+FetchContent_MakeAvailable(asio)
+
+# Add asio
+add_library(asio INTERFACE)
+target_include_directories(asio INTERFACE ${asio_SOURCE_DIR}/asio/include)
+find_package(Threads)
+target_link_libraries(asio INTERFACE Threads::Threads)
 
 file(GLOB SRCS
         "${SRC_DIR}/SlippiAuth/Application.cpp"
@@ -73,7 +83,6 @@ target_include_directories(SlippiAuth PUBLIC
 
 # Link dependencies
 target_link_libraries(SlippiAuth PRIVATE
-        #Boost::thread
         nlohmann_json::nlohmann_json
         spdlog::spdlog
         enet
