@@ -1,5 +1,8 @@
 #pragma once
 
+// Use standalone asio instead of boost::asio
+#define ASIO_STANDALONE
+
 #include "Util/LogBindings.h"
 #include "SlippiAuth/Events/ServerEvent.h"
 #include "SlippiAuth/Core.h"
