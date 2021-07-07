@@ -55,7 +55,7 @@ There was an error in the json:
 { "type": "jsonErr" }
 ```
 
-### Phase 3, get first response:
+### Phase 4, get the result of the authentication:
 
 A user got authenticated:
 ```json
