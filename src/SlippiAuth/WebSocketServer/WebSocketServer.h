@@ -5,6 +5,7 @@
 
 #include "Util/LogBindings.h"
 #include "SlippiAuth/Events/ServerEvent.h"
+#include "SlippiAuth/Events/ClientEvent.h"
 #include "SlippiAuth/Core.h"
 
 #include <websocketpp/config/asio_no_tls.hpp>

@@ -101,7 +101,7 @@ namespace SlippiAuth
     {
         WS_INFO("Server started on port {}", m_Port);
         m_Server.start_accept();
-        m_ServerThread = std::thread([this](){ m_Server.run(); });
+        m_Server.run();
     }
 
     void WebSocketServer::SendMessage(const Json& message)

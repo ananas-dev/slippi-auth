@@ -1,7 +1,5 @@
 #include "Application.h"
 
-using namespace SlippiAuth;
-
 int main()
 {
     // Load config
@@ -12,6 +10,6 @@ int main()
     SlippiAuth::Log::Init(poolSize);
 
     // Start application
-    Application application;
+    SlippiAuth::Application application;
     application.Run();
 }

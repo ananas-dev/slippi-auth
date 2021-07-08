@@ -38,7 +38,6 @@ namespace SlippiAuth {
     [[noreturn]] void Application::Run()
     {
         m_WebSocketServer.Start();
-        while(true);
     }
 
     bool Application::OnQueue(QueueEvent& e)
