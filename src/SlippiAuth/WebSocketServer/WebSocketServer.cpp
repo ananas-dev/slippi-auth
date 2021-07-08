@@ -106,8 +106,15 @@ namespace SlippiAuth
 
     void WebSocketServer::SendMessage(const Json& message)
     {
-        for (auto& hdl : m_Hdls)
-            m_Server.send(hdl, message.dump(), websocketpp::frame::opcode::text);
+        try
+        {
+            for (auto& hdl : m_Hdls)
+                m_Server.send(hdl, message.dump(), websocketpp::frame::opcode::text);
+        }
+        catch (const websocketpp::exception& e)
+        {
+            WS_ERROR("Failed to send message: {}", e.what());
+        }
     }
 
 }
