@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SlippiAuth/Client/Client.h"
+#include "SlippiAuth/Events/ServerEvent.h"
 #include "SlippiAuth/Core.h"
 
 namespace SlippiAuth {
@@ -10,6 +11,9 @@ namespace SlippiAuth {
     public:
         explicit ClientPool();
         ~ClientPool();
+
+        void OnEvent(Event& e);
+        bool OnQueue(QueueEvent& e);
 
         int64_t FindReadyClientIndex();
 

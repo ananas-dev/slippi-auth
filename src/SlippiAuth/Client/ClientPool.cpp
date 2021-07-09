@@ -29,6 +29,20 @@ namespace SlippiAuth {
         }
     }
 
+    void ClientPool::OnEvent(Event& e)
+    {
+        CORE_TRACE(e);
+
+        EventDispatcher dispatcher(e);
+        dispatcher.Dispatch<QueueEvent>(BIND_EVENT_FN(ClientPool::OnQueue));
+    }
+
+    bool ClientPool::OnQueue(QueueEvent& e)
+    {
+        StartClient(e.GetConnectCode());
+        return true;
+    }
+
     int64_t ClientPool::FindReadyClientIndex()
     {
         for (auto& client : m_Clients)

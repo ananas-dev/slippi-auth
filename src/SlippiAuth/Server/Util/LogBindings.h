@@ -13,14 +13,14 @@ namespace websocketpp::log {
         explicit WebSocketServerLogger<concurrency,names>(channel_type_hint::value hint = channel_type_hint::access)
             : basic<concurrency,names>(hint),
               m_ChannelTypeHint(hint),
-              m_Logger(SlippiAuth::Log::GetWsServerLogger())
+              m_Logger(SlippiAuth::Log::GetServerLogger())
         {}
 
         explicit WebSocketServerLogger<concurrency,names>(level channels,
             channel_type_hint::value hint = channel_type_hint::access)
             : basic<concurrency,names>(channels, hint),
               m_ChannelTypeHint(hint),
-              m_Logger(SlippiAuth::Log::GetWsServerLogger())
+              m_Logger(SlippiAuth::Log::GetServerLogger())
         {}
 
         void write(level channel, std::string const & msg)

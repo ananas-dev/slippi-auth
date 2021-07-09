@@ -2,7 +2,7 @@
 
 #include "SlippiAuth/Client/ClientConfig.h"
 #include "SlippiAuth/Client/ClientPool.h"
-#include "SlippiAuth/WebSocketServer/WebSocketServer.h"
+#include "SlippiAuth/Server/Server.h"
 #include "SlippiAuth/Events/ServerEvent.h"
 #include "SlippiAuth/Events/ClientEvent.h"
 
@@ -15,17 +15,13 @@ namespace SlippiAuth {
         Application();
         ~Application();
 
-        [[noreturn]] void Run();
+        void Run();
 
         void OnEvent(Event& e);
-    private:
-        bool OnQueue(QueueEvent& e);
-        bool OnClientSpawn(SearchingEvent& e);
-        bool OnAuthenticated(AuthenticatedEvent& e);
-        bool OnSlippiError(SlippiErrorEvent& e);
+
     private:
         ClientPool m_ClientPool;
-        WebSocketServer m_WebSocketServer;
+        Server m_Server;
     };
 
 }

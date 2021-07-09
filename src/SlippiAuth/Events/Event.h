@@ -2,6 +2,7 @@
 
 namespace SlippiAuth {
 
+#define BIND_EVENT_FN(x) std::bind(&x, this, std::placeholders::_1)
 #define BIT(x) (1 << (x))
 
     // Events are blocking right now, this is subject to changes
@@ -9,6 +10,7 @@ namespace SlippiAuth {
     {
         None = 0,
         Queue,
+        MissingArg,
         Searching,
         Authenticated,
         SlippiError,

@@ -58,7 +58,7 @@ file(GLOB SRCS
         "${SRC_DIR}/SlippiAuth/Client/ClientConfig.cpp"
         "${SRC_DIR}/SlippiAuth/Client/Client.cpp"
         "${SRC_DIR}/SlippiAuth/Client/ClientPool.cpp"
-        "${SRC_DIR}/SlippiAuth/WebSocketServer/WebSocketServer.cpp"
+        "${SRC_DIR}/SlippiAuth/Server/Server.cpp"
         )
 
 add_executable(SlippiAuth ${SRCS} src/SlippiAuth/main.cpp)

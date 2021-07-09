@@ -13,12 +13,12 @@ namespace SlippiAuth
 
         inline static std::shared_ptr<spdlog::logger>& GetClientLogger(size_t core) { return s_ClientLoggers[core]; }
         inline static std::shared_ptr<spdlog::logger>& GetCoreLogger() { return s_CoreLogger; }
-        inline static std::shared_ptr<spdlog::logger>& GetWsServerLogger() { return s_WsServerLogger; }
+        inline static std::shared_ptr<spdlog::logger>& GetServerLogger() { return s_ServerLogger; }
 
     private:
         static std::vector<std::shared_ptr<spdlog::logger>> s_ClientLoggers;
         static std::shared_ptr<spdlog::logger> s_CoreLogger;
-        static std::shared_ptr<spdlog::logger> s_WsServerLogger;
+        static std::shared_ptr<spdlog::logger> s_ServerLogger;
     };
 
 }
@@ -36,7 +36,7 @@ namespace SlippiAuth
 #define CLIENT_ERROR(client, ...) ::SlippiAuth::Log::GetClientLogger(client)->error(__VA_ARGS__)
 
 // Websocket logs macro
-#define WS_TRACE(...) ::SlippiAuth::Log::GetWsServerLogger()->trace(__VA_ARGS__)
-#define WS_INFO(...)  ::SlippiAuth::Log::GetWsServerLogger()->info(__VA_ARGS__)
-#define WS_WARN(...)  ::SlippiAuth::Log::GetWsServerLogger()->warn(__VA_ARGS__)
-#define WS_ERROR(...) ::SlippiAuth::Log::GetWsServerLogger()->trace(__VA_ARGS__)
+#define SERVER_TRACE(...) ::SlippiAuth::Log::GetServerLogger()->trace(__VA_ARGS__)
+#define SERVER_INFO(...)  ::SlippiAuth::Log::GetServerLogger()->info(__VA_ARGS__)
+#define SERVER_WARN(...)  ::SlippiAuth::Log::GetServerLogger()->warn(__VA_ARGS__)
+#define SERVER_ERROR(...) ::SlippiAuth::Log::GetServerLogger()->trace(__VA_ARGS__)

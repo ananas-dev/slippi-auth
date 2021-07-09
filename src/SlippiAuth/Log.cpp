@@ -4,7 +4,7 @@ namespace SlippiAuth {
 
     std::vector<std::shared_ptr<spdlog::logger>> Log::s_ClientLoggers;
     std::shared_ptr<spdlog::logger> Log::s_CoreLogger;
-    std::shared_ptr<spdlog::logger> Log::s_WsServerLogger;
+    std::shared_ptr<spdlog::logger> Log::s_ServerLogger;
 
     void Log::Init(size_t clientPoolSize)
     {
@@ -22,8 +22,8 @@ namespace SlippiAuth {
         s_CoreLogger = spdlog::stdout_color_mt("CORE");
         s_CoreLogger->set_level(spdlog::level::trace);
 
-        s_WsServerLogger = spdlog::stdout_color_mt("SERVER");
-        s_WsServerLogger->set_level(spdlog::level::trace);
+        s_ServerLogger = spdlog::stdout_color_mt("SERVER");
+        s_ServerLogger->set_level(spdlog::level::trace);
     }
 
 }
