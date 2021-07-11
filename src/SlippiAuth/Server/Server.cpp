@@ -47,7 +47,6 @@ namespace SlippiAuth
             m_ServerThread.join();
     }
 
-
     void Server::OnEvent(Event& e)
     {
         CORE_TRACE(e);
@@ -155,7 +154,6 @@ namespace SlippiAuth
     {
         // Not ideal because it keeps the last invalid connection handler
         CleanConnectionHandlers();
-        std::cout << m_ConnectionHandles.size() << std::endl;
     }
 
     void Server::Start()
