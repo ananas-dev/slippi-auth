@@ -6,6 +6,7 @@
 #include "Util/CustomConfig.h"
 #include "SlippiAuth/Events/ServerEvent.h"
 #include "SlippiAuth/Events/ClientEvent.h"
+#include "SlippiAuth/Events/ClientPoolEvent.h"
 #include "SlippiAuth/Core.h"
 
 namespace SlippiAuth {
@@ -28,6 +29,7 @@ namespace SlippiAuth {
         bool OnClientSpawn(SearchingEvent& e);
         bool OnAuthenticated(AuthenticatedEvent& e);
         bool OnSlippiError(SlippiErrorEvent& e);
+        bool OnNoReadyClient(NoReadyClientEvent& e);
 
         // Core server handlers
         void OnOpen(const websocketpp::connection_hdl& hdl);

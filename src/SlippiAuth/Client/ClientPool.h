@@ -23,6 +23,11 @@ namespace SlippiAuth {
         {
             return m_Clients;
         }
+
+        inline void SetEventCallback(const EventCallbackFn& callback)
+        {
+            m_EventCallback = callback;
+        }
     private:
         void RemoveThread(std::thread::id id);
     private:
@@ -33,6 +38,8 @@ namespace SlippiAuth {
 
         // Default timeout is 5 min
         std::chrono::seconds m_Timeout = 3000s;
+
+        EventCallbackFn m_EventCallback;
     };
 
 }

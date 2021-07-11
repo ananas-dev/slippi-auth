@@ -55,6 +55,7 @@ namespace SlippiAuth
         dispatcher.Dispatch<SearchingEvent>(BIND_EVENT_FN(Server::OnClientSpawn));
         dispatcher.Dispatch<AuthenticatedEvent>(BIND_EVENT_FN(Server::OnAuthenticated));
         dispatcher.Dispatch<SlippiErrorEvent>(BIND_EVENT_FN(Server::OnSlippiError));
+        dispatcher.Dispatch<NoReadyClientEvent>(BIND_EVENT_FN(Server::OnNoReadyClient));
     }
 
     bool Server::OnClientSpawn(SearchingEvent& e)
@@ -93,6 +94,18 @@ namespace SlippiAuth
         SendMessage(message);
         return true;
     }
+
+    bool Server::OnNoReadyClient(NoReadyClientEvent& e)
+    {
+        Json message = {
+                {"type", "noReadyClient"},
+                {"targetCode", e.GetTargetConnectCode()}
+        };
+
+        SendMessage(message);
+        return true;
+    }
+
 
     void Server::OnOpen(const websocketpp::connection_hdl& hdl)
     {

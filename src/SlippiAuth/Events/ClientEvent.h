@@ -30,7 +30,7 @@ namespace SlippiAuth {
         [[nodiscard]] std::string ToString() const override
         {
             std::stringstream ss;
-            ss << "Searching: " << "(" << m_ClientId << ", " << m_ConnectCode
+            ss << "SearchingEvent: " << "(" << m_ClientId << ", " << m_ConnectCode
                << ", " << m_TargetConnectCode << ")";
             return ss.str();
         }

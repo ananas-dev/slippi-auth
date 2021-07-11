@@ -5,6 +5,7 @@
 #include "SlippiAuth/Server/Server.h"
 #include "SlippiAuth/Events/ServerEvent.h"
 #include "SlippiAuth/Events/ClientEvent.h"
+#include "SlippiAuth/Events/ClientPoolEvent.h"
 
 
 namespace SlippiAuth {
@@ -18,7 +19,6 @@ namespace SlippiAuth {
         void Run();
 
         void OnEvent(Event& e);
-
     private:
         ClientPool m_ClientPool;
         Server m_Server;

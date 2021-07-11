@@ -32,36 +32,37 @@ namespace SlippiAuth {
 
         while (m_Searching)
         {
-            switch(m_State)
+            switch (m_State)
             {
-            case ProcessState::Initializing:
-            {
-                StartSearching();
-                SearchingEvent clientSpawnEvent(m_Id, m_Config["connectCode"], m_TargetConnectCode);
-                m_EventCallback(clientSpawnEvent);
-                break;
-            }
-            case ProcessState::Matchmaking:
-            {
-                HandleSearching();
-                break;
-            }
-            case ProcessState::ConnectionSuccess:
-            {
-                AuthenticatedEvent authenticatedEvent(m_Id, m_TargetConnectCode);
-                m_EventCallback(authenticatedEvent);
-                TerminateConnection();
-                m_Searching = false;
-                break;
-            }
-            case ProcessState::ErrorEncountered:
-            {
-                SlippiErrorEvent slippiErrorEvent(m_Id, m_TargetConnectCode);
-                m_EventCallback(slippiErrorEvent);
-            }
-
-            default:
-                m_State = ProcessState::ErrorEncountered;
+                case ProcessState::Initializing:
+                {
+                    StartSearching();
+                    SearchingEvent clientSpawnEvent(m_Id, m_Config["connectCode"], m_TargetConnectCode);
+                    m_EventCallback(clientSpawnEvent);
+                    break;
+                }
+                case ProcessState::Matchmaking:
+                {
+                    HandleSearching();
+                    break;
+                }
+                case ProcessState::ConnectionSuccess:
+                {
+                    AuthenticatedEvent authenticatedEvent(m_Id, m_TargetConnectCode);
+                    m_EventCallback(authenticatedEvent);
+                    TerminateConnection();
+                    m_Searching = false;
+                    break;
+                }
+                case ProcessState::ErrorEncountered:
+                {
+                    SlippiErrorEvent slippiErrorEvent(m_Id, m_TargetConnectCode);
+                    m_EventCallback(slippiErrorEvent);
+                    TerminateConnection();
+                    break;
+                }
+                default:
+                    m_State = ProcessState::ErrorEncountered;
             }
         }
 

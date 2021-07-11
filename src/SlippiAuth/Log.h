@@ -4,8 +4,8 @@
 #include <spdlog/fmt/ostr.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 
-namespace SlippiAuth
-{
+namespace SlippiAuth {
+
     class Log
     {
     public:

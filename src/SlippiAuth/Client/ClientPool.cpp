@@ -1,5 +1,7 @@
 #include "ClientPool.h"
 
+#include "SlippiAuth/Events/ClientPoolEvent.h"
+
 namespace SlippiAuth {
 
     ClientPool::ClientPool()
@@ -72,6 +74,11 @@ namespace SlippiAuth {
                     }).detach();
                 }
             );
+        }
+        else
+        {
+            NoReadyClientEvent event(connectCode);
+            m_EventCallback(event);
         }
     }
 

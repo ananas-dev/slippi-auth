@@ -10,17 +10,18 @@ namespace SlippiAuth {
     {
         None = 0,
         Queue,
-        MissingArg,
         Searching,
         Authenticated,
         SlippiError,
+        NoReadyClient,
     };
 
     enum EventCategory
     {
         None = 0,
-        EventCategoryClient    = BIT(0),
-        EventCategoryServer    = BIT(1),
+        EventCategoryClient       = BIT(0),
+        EventCategoryServer       = BIT(1),
+        EventCategoryClientPool   = BIT(2),
     };
 
 #define EVENT_CLASS_TYPE(type) static EventType GetStaticType() { return EventType::type; }\
@@ -52,9 +53,7 @@ namespace SlippiAuth {
         using EventFn = std::function<bool(T&)>;
     public:
         explicit EventDispatcher(Event& event)
-            : m_Event(event)
-        {
-        }
+            : m_Event(event) {}
 
         template<typename T>
         bool Dispatch(EventFn<T> func)
