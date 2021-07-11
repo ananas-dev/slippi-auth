@@ -24,6 +24,11 @@ namespace SlippiAuth
             return OnFail(std::forward<decltype(hdl)>(hdl));
         });
 
+        m_Server.set_close_handler([this](auto&& hdl)
+        {
+            return OnClose(std::forward<decltype(hdl)>(hdl));
+        });
+
         m_Server.listen(port);
 
         // Remove address-in-use exception when restarting
@@ -92,7 +97,7 @@ namespace SlippiAuth
 
     void Server::OnOpen(const websocketpp::connection_hdl& hdl)
     {
-        m_Hdls.push_back(hdl);
+        m_ConnectionHandles.push_back(hdl);
     }
 
     void Server::OnMessage(const websocketpp::connection_hdl& hdl, const MessagePtr& msg)
@@ -146,6 +151,13 @@ namespace SlippiAuth
         SERVER_ERROR("{} {}", con->get_ec(), con->get_ec().message());
     }
 
+    void Server::OnClose(const websocketpp::connection_hdl& hdl)
+    {
+        // Not ideal because it keeps the last invalid connection handler
+        CleanConnectionHandlers();
+        std::cout << m_ConnectionHandles.size() << std::endl;
+    }
+
     void Server::Start()
     {
         SERVER_INFO("Server started on port {}", m_Port);
@@ -157,8 +169,13 @@ namespace SlippiAuth
     {
         try
         {
-            for (auto& hdl : m_Hdls)
-                m_Server.send(hdl, message.dump(), websocketpp::frame::opcode::text);
+            for (auto& hdl : m_ConnectionHandles)
+            {
+                if (!hdl.expired())
+                {
+                    m_Server.send(hdl, message.dump(), websocketpp::frame::opcode::text);
+                }
+            }
         }
         catch (const websocketpp::exception& e)
         {
@@ -186,6 +203,21 @@ namespace SlippiAuth
         };
 
         SendMessage(hdl, message);
+    }
+
+    void Server::CleanConnectionHandlers()
+    {
+        auto iter = std::find_if(m_ConnectionHandles.begin(), m_ConnectionHandles.end(),
+                [=](const websocketpp::connection_hdl& hdl)
+        {
+            return (hdl.expired());
+        });
+
+        if (iter != m_ConnectionHandles.end())
+        {
+            m_ConnectionHandles.erase(iter);
+        }
+
     }
 
 }

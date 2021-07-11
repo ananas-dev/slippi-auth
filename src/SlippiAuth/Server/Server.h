@@ -33,14 +33,17 @@ namespace SlippiAuth {
         void OnOpen(const websocketpp::connection_hdl& hdl);
         void OnMessage(const websocketpp::connection_hdl& hdl, const MessagePtr& msg);
         void OnFail(const websocketpp::connection_hdl& hdl);
+        void OnClose(const websocketpp::connection_hdl& hdl);
 
         // Other server handlers
         void OnMissingArg(const websocketpp::connection_hdl& hdl, const std::string& argName);
 
         void SendMessage(const Json& message);
         void SendMessage(const websocketpp::connection_hdl& hdl, const Json& message);
+
+        void CleanConnectionHandlers();
     private:
-        std::vector<websocketpp::connection_hdl> m_Hdls;
+        std::vector<websocketpp::connection_hdl> m_ConnectionHandles;
         WsServer m_Server;
         uint16_t m_Port;
 
