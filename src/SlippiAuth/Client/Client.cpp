@@ -15,14 +15,8 @@ namespace SlippiAuth {
         TerminateConnection();
     }
 
-    void Client::SetTargetConnectCode(const std::string& connectCode)
-    {
-        m_TargetConnectCode = connectCode;
-    }
-
     void Client::Start()
     {
-        m_Ready = false;
         m_Connected = false;
 
         CLIENT_INFO(m_Id, "Starting [{}]...", m_Config["connectCode"].get<std::string>());
@@ -30,8 +24,13 @@ namespace SlippiAuth {
         m_State = ProcessState::Initializing;
         m_Searching = true;
 
+        uint32_t TimeoutTime = enet_time_get() + m_Timeout * 1000;
+
         while (m_Searching)
         {
+            if (TimeoutTime <= enet_time_get())
+                m_State = ProcessState::Timeout;
+
             switch (m_State)
             {
                 case ProcessState::Initializing:
@@ -54,11 +53,20 @@ namespace SlippiAuth {
                     m_Searching = false;
                     break;
                 }
+                case ProcessState::Timeout:
+                {
+                    TimeoutEvent timeoutEvent(m_Id, m_TargetConnectCode);
+                    m_EventCallback(timeoutEvent);
+                    TerminateConnection();
+                    m_Searching = false;
+                    break;
+                }
                 case ProcessState::ErrorEncountered:
                 {
                     SlippiErrorEvent slippiErrorEvent(m_Id, m_TargetConnectCode);
                     m_EventCallback(slippiErrorEvent);
                     TerminateConnection();
+                    m_Searching = false;
                     break;
                 }
                 default:
@@ -122,7 +130,6 @@ namespace SlippiAuth {
         }
 
         return -1;
-
     }
 
     void Client::DisconnectFromServer()

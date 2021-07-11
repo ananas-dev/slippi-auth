@@ -107,5 +107,37 @@ namespace SlippiAuth {
         std::string m_TargetConnectCode;
     };
 
+    class TimeoutEvent : public Event
+    {
+    public:
+        explicit TimeoutEvent(uint32_t clientId, std::string targetConnectCode)
+                : m_ClientId(clientId),
+                  m_TargetConnectCode(std::move(targetConnectCode)) {};
+
+        [[nodiscard]] inline uint32_t GetClientId() const
+        {
+            return m_ClientId;
+        }
+
+        inline const std::string& GetTargetConnectCode()
+        {
+            return m_TargetConnectCode;
+        }
+
+        [[nodiscard]] std::string ToString() const override
+        {
+            std::stringstream ss;
+            ss << "TimeoutEvent: " << "(" << m_ClientId
+               << ", " << m_TargetConnectCode << ")";
+            return ss.str();
+        }
+
+        EVENT_CLASS_CATEGORY(EventCategoryClient);
+        EVENT_CLASS_TYPE(Timeout);
+    private:
+        uint32_t m_ClientId;
+        std::string m_TargetConnectCode;
+    };
+
 }
 

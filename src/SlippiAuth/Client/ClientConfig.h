@@ -4,8 +4,6 @@
 
 namespace SlippiAuth {
 
-    using Json = nlohmann::json;
-
     class ClientConfig
     {
     public:

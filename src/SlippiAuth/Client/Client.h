@@ -14,6 +14,7 @@ namespace SlippiAuth {
         Matchmaking,
         ConnectionSuccess,
         ErrorEncountered,
+        Timeout,
     };
 
     class Client
@@ -22,11 +23,16 @@ namespace SlippiAuth {
         explicit Client(uint32_t id);
         ~Client();
 
-        void SetTargetConnectCode(const std::string& connectCode);
-
         [[nodiscard]] bool IsReady() const { return m_Ready; }
         [[nodiscard]] uint32_t GetId() const { return m_Id; }
         [[nodiscard]] Json& GetConfig() { return m_Config; }
+
+        void PreStart(const std::string& connectCode, uint32_t timeout)
+        {
+            m_Timeout = timeout;
+            m_TargetConnectCode = connectCode;
+            m_Ready = false;
+        }
 
         void Start();
 
@@ -70,6 +76,9 @@ namespace SlippiAuth {
         ENetPeer* m_Server = nullptr;
 
         EventCallbackFn m_EventCallback;
+
+        // Timeout in seconds
+        uint32_t m_Timeout;
     };
 
 }

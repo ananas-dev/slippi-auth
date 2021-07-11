@@ -37,11 +37,18 @@ namespace SlippiAuth {
 
         EventDispatcher dispatcher(e);
         dispatcher.Dispatch<QueueEvent>(BIND_EVENT_FN(ClientPool::OnQueue));
+        dispatcher.Dispatch<SetTimeoutEvent>(BIND_EVENT_FN(ClientPool::OnSetTimeout));
     }
 
     bool ClientPool::OnQueue(QueueEvent& e)
     {
         StartClient(e.GetConnectCode());
+        return true;
+    }
+
+    bool ClientPool::OnSetTimeout(SetTimeoutEvent& e)
+    {
+        m_Timeout = e.GetSeconds();
         return true;
     }
 
@@ -61,11 +68,12 @@ namespace SlippiAuth {
         uint64_t clientIndex = FindReadyClientIndex();
         if (clientIndex != -1)
         {
-            auto& client = m_Clients[FindReadyClientIndex()];
+            auto& client = m_Clients[clientIndex];
 
-            // Set the connect code which the client will connect to
-            client.SetTargetConnectCode(connectCode);
+            // Sets the connect code and the timeout
+            client.PreStart(connectCode, m_Timeout);
 
+            // Automatically remove the thread when its job is done
             std::lock_guard<std::mutex> lock(m_ThreadMutex);
             m_Threads.emplace_back([&client, this]() {
                     client.Start();

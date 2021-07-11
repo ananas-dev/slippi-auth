@@ -14,6 +14,7 @@ namespace SlippiAuth {
 
         void OnEvent(Event& e);
         bool OnQueue(QueueEvent& e);
+        bool OnSetTimeout(SetTimeoutEvent& e);
 
         int64_t FindReadyClientIndex();
 
@@ -37,7 +38,7 @@ namespace SlippiAuth {
         std::mutex m_ThreadMutex;
 
         // Default timeout is 5 min
-        std::chrono::seconds m_Timeout = 3000s;
+         uint32_t m_Timeout = 300;
 
         EventCallbackFn m_EventCallback;
     };

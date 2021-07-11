@@ -29,6 +29,7 @@ namespace SlippiAuth {
         bool OnClientSpawn(SearchingEvent& e);
         bool OnAuthenticated(AuthenticatedEvent& e);
         bool OnSlippiError(SlippiErrorEvent& e);
+        bool OnTimeout(TimeoutEvent& e);
         bool OnNoReadyClient(NoReadyClientEvent& e);
 
         // Core server handlers
@@ -49,7 +50,6 @@ namespace SlippiAuth {
         WsServer m_Server;
         uint16_t m_Port;
 
-        std::thread m_ServerThread;
         EventCallbackFn m_EventCallback;
     };
 

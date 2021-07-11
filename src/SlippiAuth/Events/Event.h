@@ -12,6 +12,7 @@ namespace SlippiAuth {
         Queue,
         Searching,
         Authenticated,
+        Timeout,
         SlippiError,
         NoReadyClient,
     };

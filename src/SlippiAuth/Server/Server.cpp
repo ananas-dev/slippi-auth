@@ -43,8 +43,6 @@ namespace SlippiAuth
 
     Server::~Server()
     {
-        if (m_ServerThread.joinable())
-            m_ServerThread.join();
     }
 
     void Server::OnEvent(Event& e)
@@ -55,6 +53,7 @@ namespace SlippiAuth
         dispatcher.Dispatch<SearchingEvent>(BIND_EVENT_FN(Server::OnClientSpawn));
         dispatcher.Dispatch<AuthenticatedEvent>(BIND_EVENT_FN(Server::OnAuthenticated));
         dispatcher.Dispatch<SlippiErrorEvent>(BIND_EVENT_FN(Server::OnSlippiError));
+        dispatcher.Dispatch<TimeoutEvent>(BIND_EVENT_FN(Server::OnTimeout));
         dispatcher.Dispatch<NoReadyClientEvent>(BIND_EVENT_FN(Server::OnNoReadyClient));
     }
 
@@ -95,6 +94,18 @@ namespace SlippiAuth
         return true;
     }
 
+    bool Server::OnTimeout(TimeoutEvent& e)
+    {
+        Json message = {
+                {"type", "timeout"},
+                {"id", e.GetClientId()},
+                {"targetCode", e.GetTargetConnectCode()}
+        };
+
+        SendMessage(message);
+        return true;
+    }
+
     bool Server::OnNoReadyClient(NoReadyClientEvent& e)
     {
         Json message = {
@@ -105,7 +116,6 @@ namespace SlippiAuth
         SendMessage(message);
         return true;
     }
-
 
     void Server::OnOpen(const websocketpp::connection_hdl& hdl)
     {
@@ -133,6 +143,18 @@ namespace SlippiAuth
                     else
                     {
                         OnMissingArg(hdl, "code");
+                    }
+                }
+                else if (message["type"] == "setTimeout")
+                {
+                    if (message.contains("seconds"))
+                    {
+                        SetTimeoutEvent event(message["seconds"]);
+                        m_EventCallback(event);
+                    }
+                    else
+                    {
+                        OnMissingArg(hdl, "seconds");
                     }
                 }
                 else if (message["type"] == "stopListening")
