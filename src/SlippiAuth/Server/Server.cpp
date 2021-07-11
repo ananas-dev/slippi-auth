@@ -152,8 +152,16 @@ namespace SlippiAuth
 
     void Server::OnClose(const websocketpp::connection_hdl& hdl)
     {
-        // Not ideal because it keeps the last invalid connection handler
-        CleanConnectionHandlers();
+        auto iter = std::find_if(m_ConnectionHandles.begin(), m_ConnectionHandles.end(),
+                [=](const websocketpp::connection_hdl& hdl2)
+                {
+                    return (m_Server.get_con_from_hdl(hdl) == m_Server.get_con_from_hdl(hdl2));
+                });
+
+        if (iter != m_ConnectionHandles.end())
+        {
+            m_ConnectionHandles.erase(iter);
+        }
     }
 
     void Server::Start()
@@ -201,21 +209,6 @@ namespace SlippiAuth
         };
 
         SendMessage(hdl, message);
-    }
-
-    void Server::CleanConnectionHandlers()
-    {
-        auto iter = std::find_if(m_ConnectionHandles.begin(), m_ConnectionHandles.end(),
-                [=](const websocketpp::connection_hdl& hdl)
-        {
-            return (hdl.expired());
-        });
-
-        if (iter != m_ConnectionHandles.end())
-        {
-            m_ConnectionHandles.erase(iter);
-        }
-
     }
 
 }

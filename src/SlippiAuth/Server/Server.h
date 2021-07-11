@@ -38,10 +38,10 @@ namespace SlippiAuth {
         // Other server handlers
         void OnMissingArg(const websocketpp::connection_hdl& hdl, const std::string& argName);
 
+        // Send message to every connected clients
         void SendMessage(const Json& message);
+        // Send message to one client
         void SendMessage(const websocketpp::connection_hdl& hdl, const Json& message);
-
-        void CleanConnectionHandlers();
     private:
         std::vector<websocketpp::connection_hdl> m_ConnectionHandles;
         WsServer m_Server;
