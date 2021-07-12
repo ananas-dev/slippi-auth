@@ -24,7 +24,7 @@ namespace SlippiAuth {
         m_State = ProcessState::Initializing;
         m_Searching = true;
 
-        uint32_t TimeoutTime = enet_time_get() + m_Timeout * 10;
+        uint32_t TimeoutTime = enet_time_get() + m_Timeout;
 
         while (m_Searching)
         {
