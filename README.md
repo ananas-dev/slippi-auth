@@ -70,7 +70,7 @@ The command is unknown:
 
 There is a missing argument:
 ```json
-{ "type": "missingArg", arg: "code"}
+{ "type": "missingArg", "what": "code"}
 ```
 
 ### Phase 4, get the result of the authentication
