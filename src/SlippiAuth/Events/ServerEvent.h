@@ -7,49 +7,39 @@ namespace SlippiAuth {
     class QueueEvent : public Event
     {
     public:
-        explicit QueueEvent(std::string connectCode)
-            : m_ConnectCode(std::move(connectCode)) {};
+        explicit QueueEvent(std::string userConnectCode, uint32_t timeout, uint64_t discordId)
+            : m_UserConnectCode(std::move(userConnectCode)),
+            m_Timeout(timeout),
+            m_DiscordId(discordId) {}
 
-        inline const std::string& GetConnectCode()
+        inline const std::string& GetUserConnectCode()
         {
-            return m_ConnectCode;
+            return m_UserConnectCode;
+        }
+
+        [[nodiscard]] inline uint32_t GetTimeout() const
+        {
+            return m_Timeout;
+        }
+
+        [[nodiscard]] inline uint64_t GetDiscordId() const
+        {
+            return m_DiscordId;
         }
 
         [[nodiscard]] std::string ToString() const override
         {
             std::stringstream ss;
-            ss << "QueueEvent: " << m_ConnectCode;
+            ss << "QueueEvent: (" << m_UserConnectCode << ", " << m_Timeout << ")";
             return ss.str();
         }
 
         EVENT_CLASS_CATEGORY(EventCategoryServer);
         EVENT_CLASS_TYPE(Queue);
     private:
-        std::string m_ConnectCode;
-    };
-
-    class SetTimeoutEvent : public Event
-    {
-    public:
-        explicit SetTimeoutEvent(uint32_t seconds)
-                : m_Seconds(seconds) {};
-
-        [[nodiscard]] inline uint32_t GetSeconds() const
-        {
-            return m_Seconds;
-        }
-
-        [[nodiscard]] std::string ToString() const override
-        {
-            std::stringstream ss;
-            ss << "SetTimeoutEvent: " << m_Seconds;
-            return ss.str();
-        }
-
-        EVENT_CLASS_CATEGORY(EventCategoryServer);
-        EVENT_CLASS_TYPE(Timeout);
-    private:
-        uint32_t m_Seconds;
+        std::string m_UserConnectCode;
+        uint32_t m_Timeout;
+        uint64_t m_DiscordId;
     };
 
 }

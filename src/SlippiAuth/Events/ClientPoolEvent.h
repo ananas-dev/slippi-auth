@@ -8,25 +8,32 @@ namespace SlippiAuth
     class NoReadyClientEvent : public Event
     {
     public:
-        explicit NoReadyClientEvent(std::string targetConnectCode)
-            : m_TargetConnectCode(std::move(targetConnectCode)) {}
+        explicit NoReadyClientEvent(uint64_t discordId, std::string userConnectCode)
+            : m_DiscordId(discordId),
+            m_UserConnectCode(std::move(userConnectCode)) {}
 
-        inline const std::string& GetTargetConnectCode()
+        [[nodiscard]] inline uint64_t GetDiscordId() const
         {
-            return m_TargetConnectCode;
+            return m_DiscordId;
+        }
+
+        inline const std::string& GetUserConnectCode()
+        {
+            return m_UserConnectCode;
         }
 
         [[nodiscard]] std::string ToString() const override
         {
             std::stringstream ss;
-            ss << "NoReadyClientEvent: " << m_TargetConnectCode;
+            ss << "NoReadyClientEvent: (" << m_DiscordId << ", " << m_UserConnectCode << ")";
             return ss.str();
         }
 
         EVENT_CLASS_CATEGORY(EventCategoryClientPool);
         EVENT_CLASS_TYPE(NoReadyClient);
     private:
-        std::string m_TargetConnectCode;
+        uint64_t m_DiscordId;
+        std::string m_UserConnectCode;
     };
 
 }

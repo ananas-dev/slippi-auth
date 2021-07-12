@@ -61,9 +61,9 @@ namespace SlippiAuth
     {
         Json message = {
                 {"type", "searching"},
-                {"id", e.GetClientId()},
-                {"code", e.GetConnectCode()},
-                {"targetCode", e.GetTargetConnectCode()}
+                {"discordId", e.GetDiscordId()},
+                {"botCode", e.GetBotConnectCode()},
+                {"userCode", e.GetUserConnectCode()}
         };
 
         SendMessage(message);
@@ -74,8 +74,8 @@ namespace SlippiAuth
     {
         Json message = {
                 {"type", "authenticated"},
-                {"id", e.GetClientId()},
-                {"targetCode", e.GetTargetConnectCode()}
+                {"discordId", e.GetDiscordId()},
+                {"userCode", e.GetUserConnectCode()}
         };
 
         SendMessage(message);
@@ -86,8 +86,8 @@ namespace SlippiAuth
     {
         Json message = {
                 {"type", "slippiErr"},
-                {"id", e.GetClientId()},
-                {"targetCode", e.GetTargetConnectCode()}
+                {"discordId", e.GetDiscordId()},
+                {"userCode", e.GetUserConnectCode()}
         };
 
         SendMessage(message);
@@ -98,8 +98,8 @@ namespace SlippiAuth
     {
         Json message = {
                 {"type", "timeout"},
-                {"id", e.GetClientId()},
-                {"targetCode", e.GetTargetConnectCode()}
+                {"discordId", e.GetDiscordId()},
+                {"userCode", e.GetUserConnectCode()}
         };
 
         SendMessage(message);
@@ -110,7 +110,8 @@ namespace SlippiAuth
     {
         Json message = {
                 {"type", "noReadyClient"},
-                {"targetCode", e.GetTargetConnectCode()}
+                {"discordId", e.GetDiscordId()},
+                {"userCode", e.GetUserConnectCode()}
         };
 
         SendMessage(message);
@@ -135,26 +136,14 @@ namespace SlippiAuth
 
                 if (message["type"] == "queue")
                 {
-                    if (message.contains("code"))
+                    if (message.contains("userCode") && message.contains("timeout") && message.contains("discordId"))
                     {
-                        QueueEvent event(message["code"]);
+                    QueueEvent event(message["userCode"], message["timeout"], message["discordId"]);
                         m_EventCallback(event);
                     }
                     else
                     {
-                        OnMissingArg(hdl, "code");
-                    }
-                }
-                else if (message["type"] == "setTimeout")
-                {
-                    if (message.contains("seconds"))
-                    {
-                        SetTimeoutEvent event(message["seconds"]);
-                        m_EventCallback(event);
-                    }
-                    else
-                    {
-                        OnMissingArg(hdl, "seconds");
+                        OnMissingArg(hdl, "code, timeout or discordId");
                     }
                 }
                 else if (message["type"] == "stopListening")

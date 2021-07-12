@@ -24,7 +24,7 @@ namespace SlippiAuth {
         m_State = ProcessState::Initializing;
         m_Searching = true;
 
-        uint32_t TimeoutTime = enet_time_get() + m_Timeout * 1000;
+        uint32_t TimeoutTime = enet_time_get() + m_Timeout * 10;
 
         while (m_Searching)
         {
@@ -36,7 +36,7 @@ namespace SlippiAuth {
                 case ProcessState::Initializing:
                 {
                     StartSearching();
-                    SearchingEvent clientSpawnEvent(m_Id, m_Config["connectCode"], m_TargetConnectCode);
+                    SearchingEvent clientSpawnEvent(m_DiscordId, m_Config["connectCode"], m_TargetConnectCode);
                     m_EventCallback(clientSpawnEvent);
                     break;
                 }
@@ -47,7 +47,7 @@ namespace SlippiAuth {
                 }
                 case ProcessState::ConnectionSuccess:
                 {
-                    AuthenticatedEvent authenticatedEvent(m_Id, m_TargetConnectCode);
+                    AuthenticatedEvent authenticatedEvent(m_DiscordId, m_TargetConnectCode);
                     m_EventCallback(authenticatedEvent);
                     TerminateConnection();
                     m_Searching = false;
@@ -55,7 +55,7 @@ namespace SlippiAuth {
                 }
                 case ProcessState::Timeout:
                 {
-                    TimeoutEvent timeoutEvent(m_Id, m_TargetConnectCode);
+                    TimeoutEvent timeoutEvent(m_DiscordId, m_TargetConnectCode);
                     m_EventCallback(timeoutEvent);
                     TerminateConnection();
                     m_Searching = false;
@@ -63,7 +63,7 @@ namespace SlippiAuth {
                 }
                 case ProcessState::ErrorEncountered:
                 {
-                    SlippiErrorEvent slippiErrorEvent(m_Id, m_TargetConnectCode);
+                    SlippiErrorEvent slippiErrorEvent(m_DiscordId, m_TargetConnectCode);
                     m_EventCallback(slippiErrorEvent);
                     TerminateConnection();
                     m_Searching = false;

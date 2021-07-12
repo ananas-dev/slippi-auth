@@ -14,11 +14,10 @@ namespace SlippiAuth {
 
         void OnEvent(Event& e);
         bool OnQueue(QueueEvent& e);
-        bool OnSetTimeout(SetTimeoutEvent& e);
 
         int64_t FindReadyClientIndex();
 
-        void StartClient(const std::string& connectCode);
+        void StartClient(const std::string& connectCode, uint32_t timeout, uint64_t discordId);
 
         std::vector<Client>& GetClients()
         {
@@ -36,9 +35,6 @@ namespace SlippiAuth {
         std::vector<Client> m_Clients;
         std::vector<std::thread> m_Threads;
         std::mutex m_ThreadMutex;
-
-        // Default timeout is 5 min
-         uint32_t m_Timeout = 300;
 
         EventCallbackFn m_EventCallback;
     };

@@ -27,10 +27,11 @@ namespace SlippiAuth {
         [[nodiscard]] uint32_t GetId() const { return m_Id; }
         [[nodiscard]] Json& GetConfig() { return m_Config; }
 
-        void PreStart(const std::string& connectCode, uint32_t timeout)
+        void PreStart(const std::string& connectCode, uint32_t timeout, uint64_t discordId)
         {
             m_Timeout = timeout;
             m_TargetConnectCode = connectCode;
+            m_DiscordId = discordId;
             m_Ready = false;
         }
 
@@ -79,6 +80,9 @@ namespace SlippiAuth {
 
         // Timeout in seconds
         uint32_t m_Timeout;
+
+        // For codeman purposes
+        uint64_t m_DiscordId;
     };
 
 }

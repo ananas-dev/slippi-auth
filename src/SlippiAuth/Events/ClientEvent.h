@@ -7,137 +7,136 @@ namespace SlippiAuth {
     class SearchingEvent : public Event
     {
     public:
-        explicit SearchingEvent(uint32_t clientId, std::string connectCode, std::string targetConnectCode)
-            : m_ClientId(clientId),
-            m_ConnectCode(std::move(connectCode)),
-            m_TargetConnectCode(std::move(targetConnectCode)) {};
+        explicit SearchingEvent(uint64_t discordId, std::string botConnectCode, std::string userConnectCode)
+            : m_DiscordId(discordId),
+            m_UserConnectCode(std::move(userConnectCode)),
+            m_BotConnectCode(std::move(botConnectCode)) {};
 
-        [[nodiscard]] inline uint32_t GetClientId() const
+        [[nodiscard]] inline uint64_t GetDiscordId() const
         {
-            return m_ClientId;
+            return m_DiscordId;
         }
 
-        inline const std::string& GetConnectCode()
+        inline const std::string& GetUserConnectCode()
         {
-            return m_ConnectCode;
+            return m_UserConnectCode;
         }
 
-        inline const std::string& GetTargetConnectCode()
+        inline const std::string& GetBotConnectCode()
         {
-            return m_TargetConnectCode;
+            return m_BotConnectCode;
         }
 
         [[nodiscard]] std::string ToString() const override
         {
             std::stringstream ss;
-            ss << "SearchingEvent: " << "(" << m_ClientId << ", " << m_ConnectCode
-               << ", " << m_TargetConnectCode << ")";
+            ss << "SearchingEvent: " << "(" << m_DiscordId << ", " << m_BotConnectCode
+               << ", " << m_UserConnectCode << ")";
             return ss.str();
         }
 
         EVENT_CLASS_CATEGORY(EventCategoryClient);
         EVENT_CLASS_TYPE(Searching);
     private:
-        uint32_t m_ClientId;
-        std::string m_ConnectCode;
-        std::string m_TargetConnectCode;
+        uint64_t m_DiscordId;
+        std::string m_BotConnectCode;
+        std::string m_UserConnectCode;
     };
 
     class AuthenticatedEvent : public Event
     {
     public:
-        explicit AuthenticatedEvent(uint32_t clientId, std::string targetConnectCode)
-            : m_ClientId(clientId),
-              m_TargetConnectCode(std::move(targetConnectCode)) {};
+        explicit AuthenticatedEvent(uint64_t discordId, std::string userConnectCode)
+            : m_DiscordId(discordId),
+            m_UserConnectCode(std::move(userConnectCode)) {};
 
-        [[nodiscard]] inline uint32_t GetClientId() const
+        [[nodiscard]] inline uint64_t GetDiscordId() const
         {
-            return m_ClientId;
+            return m_DiscordId;
         }
 
-        inline const std::string& GetTargetConnectCode()
+        inline const std::string& GetUserConnectCode()
         {
-            return m_TargetConnectCode;
+            return m_UserConnectCode;
         }
 
         [[nodiscard]] std::string ToString() const override
         {
             std::stringstream ss;
-            ss << "AuthenticatedEvent: " << "(" << m_ClientId
-               << ", " << m_TargetConnectCode << ")";
+            ss << "AuthenticatedEvent: " << "(" << m_DiscordId
+               << ", " << m_UserConnectCode << ")";
             return ss.str();
         }
 
         EVENT_CLASS_CATEGORY(EventCategoryClient);
         EVENT_CLASS_TYPE(Authenticated);
     private:
-        uint32_t m_ClientId;
-        std::string m_TargetConnectCode;
+        uint64_t m_DiscordId;
+        std::string m_UserConnectCode;
     };
 
     class SlippiErrorEvent : public Event
     {
     public:
-        explicit SlippiErrorEvent(uint32_t clientId, std::string targetConnectCode)
-            : m_ClientId(clientId),
-              m_TargetConnectCode(std::move(targetConnectCode)) {};
+        explicit SlippiErrorEvent(uint64_t discordId, std::string userConnectCode)
+            : m_DiscordId(discordId),
+              m_UserConnectCode(std::move(userConnectCode)) {};
 
-        [[nodiscard]] inline uint32_t GetClientId() const
+        [[nodiscard]] inline uint64_t GetDiscordId() const
         {
-            return m_ClientId;
+            return m_DiscordId;
         }
 
-        inline const std::string& GetTargetConnectCode()
+        inline const std::string& GetUserConnectCode()
         {
-            return m_TargetConnectCode;
+            return m_UserConnectCode;
         }
 
         [[nodiscard]] std::string ToString() const override
         {
             std::stringstream ss;
-            ss << "SlippiErrorEvent: " << "(" << m_ClientId
-               << ", " << m_TargetConnectCode << ")";
+            ss << "SlippiErrorEvent: " << "(" << m_DiscordId
+               << ", " << m_UserConnectCode << ")";
             return ss.str();
         }
 
         EVENT_CLASS_CATEGORY(EventCategoryClient);
         EVENT_CLASS_TYPE(SlippiError);
     private:
-        uint32_t m_ClientId;
-        std::string m_TargetConnectCode;
+        uint64_t m_DiscordId;
+        std::string m_UserConnectCode;
     };
 
     class TimeoutEvent : public Event
     {
     public:
-        explicit TimeoutEvent(uint32_t clientId, std::string targetConnectCode)
-                : m_ClientId(clientId),
-                  m_TargetConnectCode(std::move(targetConnectCode)) {};
+        explicit TimeoutEvent(uint64_t discordId, std::string userConnectCode)
+                : m_DiscordId(discordId),
+                  m_UserConnectCode(std::move(userConnectCode)) {};
 
-        [[nodiscard]] inline uint32_t GetClientId() const
+        [[nodiscard]] inline uint64_t GetDiscordId() const
         {
-            return m_ClientId;
+            return m_DiscordId;
         }
 
-        inline const std::string& GetTargetConnectCode()
+        inline const std::string& GetUserConnectCode()
         {
-            return m_TargetConnectCode;
+            return m_UserConnectCode;
         }
 
         [[nodiscard]] std::string ToString() const override
         {
             std::stringstream ss;
-            ss << "TimeoutEvent: " << "(" << m_ClientId
-               << ", " << m_TargetConnectCode << ")";
+            ss << "TimeoutEvent: " << "(" << m_DiscordId
+               << ", " << m_UserConnectCode << ")";
             return ss.str();
         }
 
         EVENT_CLASS_CATEGORY(EventCategoryClient);
         EVENT_CLASS_TYPE(Timeout);
     private:
-        uint32_t m_ClientId;
-        std::string m_TargetConnectCode;
+        uint64_t m_DiscordId;
+        std::string m_UserConnectCode;
     };
 
 }
-
