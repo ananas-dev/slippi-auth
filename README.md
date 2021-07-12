@@ -16,35 +16,29 @@ make
 
 > The websocket server is located on localhost port 9002.
 
-### Phase 1, configure server:
+### Client messages
 
-Set the timeout:
-```json
-{ "type": "setTimeout", "seconds": "2000" }
-```
-
-### Phase 2, queue a user:
-
+Queue an user:
 ```json
 { "type": "queue", "code": "XXX#123" }
 ```
 
-### Phase 3, get first response
+### Server messages
 
 There was an error connecting to the Slippi servers:
 ```json
 {
   "type": "slippiErr",
-  "id": 0,
-  "code":"AUTH#123",
-  "targetCode":"XXX#123"
+  "discordId": 582645006100201485,
+  "userCode":"XXX#123"
 }
 ```
 The clients are all occupied:
 ```json
 {
   "type": "noReadyClient",
-  "targetCode":"XXX#123"
+  "discordId": 582645006100201485,
+  "userCode": "XXX#123"
 }
 ```
 
@@ -52,9 +46,9 @@ A client is searching for the user:
 ```json
 {
   "type": "searching",
-  "id": 0,
-  "code": "AUTH#123",
-  "targetCode": "XXX#123"
+  "discordId": 582645006100201485,
+  "botCode": "AUTH#123",
+  "userCode": "XXX#123"
 }
 ```
 
@@ -65,7 +59,7 @@ There was an error in the json:
 
 The command is unknown:
 ```json
-{ "type": "unkwnownCommand" }
+{ "type": "unknownCommand" }
 ```
 
 There is a missing argument:
@@ -73,14 +67,12 @@ There is a missing argument:
 { "type": "missingArg", "what": "code"}
 ```
 
-### Phase 4, get the result of the authentication
-
 A user got authenticated:
 ```json
 {
   "type": "authenticated",
-  "id": 0,
-  "targetCode": "XXX#123"
+  "discordId": 582645006100201485,
+  "userCode": "XXX#123"
 }
 ```
 
@@ -88,7 +80,7 @@ A user got a timeout:
 ```json
 {
   "type": "timeout",
-  "id": 0,
-  "targetCode": "XXX#123"
+  "discordId": 582645006100201485,
+  "userCode": "XXX#123"
 }
 ```
