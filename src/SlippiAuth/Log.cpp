@@ -8,8 +8,6 @@ namespace SlippiAuth {
 
     void Log::Init(size_t clientPoolSize)
     {
-        spdlog::set_pattern("%^ [%T] %n: %v%$");
-
         // Allocate enough memory to hold all the loggers
         s_ClientLoggers.reserve(clientPoolSize);
 
