@@ -11,8 +11,7 @@ namespace SlippiAuth {
 
     Client::~Client()
     {
-        m_State = ProcessState::ErrorEncountered;
-        TerminateConnection();
+        Disconnect();
     }
 
     void Client::Start()
@@ -24,7 +23,7 @@ namespace SlippiAuth {
         m_State = ProcessState::Initializing;
         m_Searching = true;
 
-        uint32_t TimeoutTime = enet_time_get() + m_Timeout * 10;
+        uint32_t TimeoutTime = enet_time_get() + m_Timeout;
 
         while (m_Searching)
         {
@@ -33,45 +32,49 @@ namespace SlippiAuth {
 
             switch (m_State)
             {
-                case ProcessState::Initializing:
-                {
-                    StartSearching();
-                    SearchingEvent clientSpawnEvent(m_DiscordId, m_Config["connectCode"], m_TargetConnectCode);
-                    m_EventCallback(clientSpawnEvent);
-                    break;
-                }
-                case ProcessState::Matchmaking:
-                {
-                    HandleSearching();
-                    break;
-                }
-                case ProcessState::FoundOpponent:
-                {
-                    TerminateConnection();
-                    m_Searching = false;
-                    HandleConnecting();
-                    break;
-                }
-                case ProcessState::Timeout:
-                {
-                    TimeoutEvent timeoutEvent(m_DiscordId, m_TargetConnectCode);
-                    m_EventCallback(timeoutEvent);
-                    TerminateConnection();
-                    m_Searching = false;
-                    break;
-                }
-                case ProcessState::ConnectionSuccess:
-                {
-                    AuthenticatedEvent authenticatedEvent(m_DiscordId, m_TargetConnectCode);
-                    m_EventCallback(authenticatedEvent);
-                    break;
-                }
+            case ProcessState::Initializing:
+            {
+                StartSearching();
+                SearchingEvent clientSpawnEvent(m_DiscordId, m_Config["connectCode"], m_TargetConnectCode);
+                m_EventCallback(clientSpawnEvent);
+                break;
+            }
+            case ProcessState::Matchmaking:
+            {
+                HandleSearching();
+                break;
+            }
+            case ProcessState::FoundOpponent:
+            {
+                Disconnect();
+                HandleConnecting();
+                break;
+            }
+            case ProcessState::ConnectionSuccess:
+            {
+                AuthenticatedEvent authenticatedEvent(m_DiscordId, m_TargetConnectCode);
+                m_EventCallback(authenticatedEvent);
+                Disconnect();
+                if (m_Opponent != nullptr)
+                    std::cout << "wtf" << std::endl;
 
-                case ProcessState::ErrorEncountered:
+                m_Searching = false;
+                break;
+            }
+            case ProcessState::Timeout:
+            {
+                TimeoutEvent timeoutEvent(m_DiscordId, m_TargetConnectCode);
+                m_EventCallback(timeoutEvent);
+                Disconnect();
+                m_Searching = false;
+                break;
+            }
+
+            case ProcessState::ErrorEncountered:
                 {
                     SlippiErrorEvent slippiErrorEvent(m_DiscordId, m_TargetConnectCode);
                     m_EventCallback(slippiErrorEvent);
-                    TerminateConnection();
+                    Disconnect();
                     m_Searching = false;
                     break;
                 }
@@ -142,10 +145,7 @@ namespace SlippiAuth {
     {
         m_Connected = false;
 
-        if (m_Server)
-            enet_peer_disconnect(m_Server, 0);
-        else
-            return;
+        enet_peer_disconnect(m_Server, 0);
 
         ENetEvent netEvent;
         while (enet_host_service(m_Client, &netEvent, 3000) > 0)
@@ -163,15 +163,44 @@ namespace SlippiAuth {
             }
         }
 
-        // didn't disconnect gracefully force disconnect
+        // Didn't disconnect gracefully force disconnect
         enet_peer_reset(m_Server);
         m_Server = nullptr;
     }
 
-    void Client::TerminateConnection()
+    void Client::DisconnectFromOpponent()
+    {
+        enet_peer_disconnect(m_Opponent, 0);
+
+        ENetEvent netEvent;
+        while (enet_host_service(m_Client, &netEvent, 3000) > 0)
+        {
+            switch (netEvent.type)
+            {
+            case ENET_EVENT_TYPE_RECEIVE:
+                enet_packet_destroy(netEvent.packet);
+                break;
+            case ENET_EVENT_TYPE_DISCONNECT:
+                m_Opponent = nullptr;
+                return;
+            default:
+                break;
+            }
+        }
+
+        // Didn't disconnect gracefully force disconnect
+        enet_peer_reset(m_Opponent);
+        m_Opponent = nullptr;
+    }
+
+    void Client::Disconnect()
     {
         // Disconnect from server
-        DisconnectFromServer();
+        if (m_Server != nullptr)
+            DisconnectFromServer();
+
+        if (m_Opponent != nullptr)
+            DisconnectFromOpponent();
 
         // Destroy client
         if (m_Client)

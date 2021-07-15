@@ -19,15 +19,6 @@ namespace SlippiAuth
         Timeout,
     };
 
-    enum class SlippiConnectStatus
-    {
-        NET_CONNECT_STATUS_UNSET,
-        NET_CONNECT_STATUS_INITIATED,
-        NET_CONNECT_STATUS_CONNECTED,
-        NET_CONNECT_STATUS_FAILED,
-        NET_CONNECT_STATUS_DISCONNECTED,
-    };
-
     class Client
     {
     public:
@@ -69,8 +60,9 @@ namespace SlippiAuth
         void SendMessage(const Json& msg);
         int ReceiveMessage(Json& msg, int timeoutMs);
 
+        void Disconnect();
         void DisconnectFromServer();
-        void TerminateConnection();
+        void DisconnectFromOpponent();
 
         void StartSearching();
         void HandleSearching();
