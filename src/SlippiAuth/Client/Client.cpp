@@ -53,9 +53,6 @@ namespace SlippiAuth {
                 AuthenticatedEvent authenticatedEvent(m_DiscordId, m_TargetConnectCode);
                 m_EventCallback(authenticatedEvent);
                 Disconnect();
-                if (m_Opponent != nullptr)
-                    std::cout << "wtf" << std::endl;
-
                 m_Searching = false;
                 break;
             }
