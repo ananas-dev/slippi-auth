@@ -78,7 +78,8 @@ namespace SlippiAuth
 
         ProcessState m_State;
 
-        const std::string m_AppVersion = "2.3.1";
+        const std::string m_SlippiApiBaseUrl = "https://users-rest-dot-slippi.uc.r.appspot.com/user";
+        std::string m_SlippiLatestVersion{};
 
         Json m_Config{};
 

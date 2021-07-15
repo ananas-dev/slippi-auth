@@ -52,7 +52,14 @@ FetchContent_Declare(asio
 
 FetchContent_MakeAvailable(asio)
 
+FetchContent_Declare(cpr
+        GIT_REPOSITORY https://github.com/whoshuu/cpr.git
+        GIT_TAG 1.6.2
+        )
+FetchContent_MakeAvailable(cpr)
+
 file(GLOB SRCS
+        "${SRC_DIR}/SlippiAuth/main.cpp"
         "${SRC_DIR}/SlippiAuth/Application.cpp"
         "${SRC_DIR}/SlippiAuth/Log.cpp"
         "${SRC_DIR}/SlippiAuth/Client/ClientConfig.cpp"
@@ -61,7 +68,7 @@ file(GLOB SRCS
         "${SRC_DIR}/SlippiAuth/Server/Server.cpp"
         )
 
-add_executable(SlippiAuth ${SRCS} src/SlippiAuth/main.cpp)
+add_executable(SlippiAuth ${SRCS})
 
 # Precompiled header
 target_precompile_headers(SlippiAuth PRIVATE "${SRC_DIR}/pch.h")
@@ -80,5 +87,6 @@ target_include_directories(SlippiAuth PUBLIC
 target_link_libraries(SlippiAuth PRIVATE
         nlohmann_json::nlohmann_json
         spdlog::spdlog
+        cpr::cpr
         enet
         )

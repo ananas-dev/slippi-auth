@@ -2,6 +2,8 @@
 
 #include "SlippiAuth/Events/ClientEvent.h"
 
+#include <cpr/cpr.h>
+
 namespace SlippiAuth {
 
     Client::Client(uint16_t id) :
@@ -205,6 +207,12 @@ namespace SlippiAuth {
 
     void Client::StartSearching()
     {
+        // Set the latest version
+        cpr::AsyncResponse slippiApiRespFuture = cpr::GetAsync(
+                cpr::Url{m_SlippiApiBaseUrl + "/" + m_Config["uid"].get<std::string>()},
+                cpr::VerifySsl(false)
+                );
+
         int retryCount = 0;
         while (m_Client == nullptr && retryCount < 15)
         {
@@ -268,11 +276,27 @@ namespace SlippiAuth {
         connectCodeBuf.insert(connectCodeBuf.end(),  m_TargetConnectCode.begin(),
                 m_TargetConnectCode.end());
 
+        // Retrieve the response
+        cpr::Response slippiApiResp = slippiApiRespFuture.get();
+
+        if (slippiApiResp.status_code == 200)
+        {
+            Json responseJson = Json::parse(slippiApiResp.text);
+            m_SlippiLatestVersion = responseJson["latestVersion"];
+            CLIENT_INFO(m_Id, "Using Slippi version {}", m_SlippiLatestVersion);
+        }
+        else
+        {
+            m_State = ProcessState::ErrorEncountered;
+            CLIENT_ERROR(m_Id, "{}", slippiApiResp.error.message);
+            return;
+        }
+
         Json request = {
                 {"type", "create-ticket"},
                 {"user", {{"uid", m_Config["uid"]}, {"playKey", m_Config["playKey"]}}},
                 {"search", {{"mode", 2}, {"connectCode", connectCodeBuf}}},
-                {"appVersion", m_AppVersion},
+                {"appVersion", m_SlippiLatestVersion},
                 {"ipAddressLan", "127.0.0.1:" + std::to_string(m_HostPort)},
         };
 
