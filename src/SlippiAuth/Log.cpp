@@ -13,7 +13,7 @@ namespace SlippiAuth {
 
         for (int index = 0; index < clientPoolSize; index++)
         {
-            s_ClientLoggers.emplace_back(spdlog::stdout_color_mt("CLIENT (" + std::to_string(index) + ")"));
+            s_ClientLoggers.emplace_back(spdlog::stdout_color_mt("CLIENT " + std::to_string(index)));
             s_ClientLoggers[index]->set_level(spdlog::level::trace);
         }
 
