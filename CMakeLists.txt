@@ -28,28 +28,24 @@ FetchContent_Declare(spdlog
         GIT_REPOSITORY https://github.com/gabime/spdlog
         GIT_TAG v1.8.5
 )
-
 FetchContent_MakeAvailable(spdlog)
 
 FetchContent_Declare(enet
         GIT_REPOSITORY https://github.com/lsalzman/enet
         GIT_TAG v1.3.17
         )
-
 FetchContent_MakeAvailable(enet)
 
 FetchContent_Declare(websocketpp
         GIT_REPOSITORY https://github.com/zaphoyd/websocketpp
         GIT_TAG 56123c87598f8b1dd471be83ca841ceae07f95ba
         )
-
 FetchContent_MakeAvailable(websocketpp)
 
 FetchContent_Declare(asio
         GIT_REPOSITORY https://github.com/chriskohlhoff/asio
         GIT_TAG asio-1-18-2
         )
-
 FetchContent_MakeAvailable(asio)
 
 FetchContent_Declare(cpr
@@ -82,6 +78,9 @@ target_include_directories(SlippiAuth PUBLIC
         "${websocketpp_SOURCE_DIR}"
         "${asio_SOURCE_DIR}/asio/include"
         )
+
+# Set important variables
+set_property(TARGET cpr PROPERTY CPR_ENABLE_SSL OFF)
 
 # Link dependencies
 target_link_libraries(SlippiAuth PRIVATE
