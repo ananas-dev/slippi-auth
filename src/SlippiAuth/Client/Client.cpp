@@ -16,8 +16,6 @@ namespace SlippiAuth {
 
     void Client::Start()
     {
-        m_Connected = false;
-
         CLIENT_INFO(m_Id, "Starting [{}]...", m_Config["connectCode"].get<std::string>());
 
         m_State = ProcessState::Initializing;
@@ -143,8 +141,6 @@ namespace SlippiAuth {
 
     void Client::DisconnectFromServer()
     {
-        m_Connected = false;
-
         enet_peer_disconnect(m_Server, 0);
 
         ENetEvent netEvent;
@@ -247,7 +243,9 @@ namespace SlippiAuth {
         }
 
         int connectAttemptCount = 0;
-        while(!m_Connected)
+        bool connected = false;
+
+        while(!connected)
         {
             ENetEvent  netEvent;
             int net = enet_host_service(m_Client, &netEvent, 500);
@@ -263,7 +261,7 @@ namespace SlippiAuth {
                 }
             }
 
-            m_Connected = true;
+            connected = true;
 
             CLIENT_INFO(m_Id, "Connected to {}:{}", m_ServerHost, m_ServerPort);
         }

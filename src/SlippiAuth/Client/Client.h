@@ -82,7 +82,6 @@ namespace SlippiAuth
 
         Json m_Config{};
 
-        bool m_Connected = false;
         bool m_Searching = false;
 
         const std::string m_ServerHost = "mm.slippi.gg";
