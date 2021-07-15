@@ -20,7 +20,12 @@ make
 
 Queue an user:
 ```json
-{ "type": "queue", "code": "XXX#123" }
+{
+  "type": "queue",
+  "discordId": 582645006100201485,
+  "userCode":"XXX#123",
+  "timeout": 10000
+}
 ```
 
 ### Server messages
