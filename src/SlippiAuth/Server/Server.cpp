@@ -29,10 +29,10 @@ namespace SlippiAuth
             return OnClose(std::forward<decltype(hdl)>(hdl));
         });
 
-        m_Server.listen(port);
-
         // Remove address-in-use exception when restarting
         m_Server.set_reuse_addr(true);
+
+        m_Server.listen(port);
 
         // Set logger
         m_Server.set_access_channels(websocketpp::log::alevel::all);
