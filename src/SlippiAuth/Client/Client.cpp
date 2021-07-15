@@ -410,10 +410,12 @@ namespace SlippiAuth {
             CLIENT_ERROR(m_Id, "m_Opponent is NULL!");
 
         bool connected = false;
-        while (!connected)
+        int maxAttempts = 15;
+
+        for (int i = 0; !connected && (i < maxAttempts); i++)
         {
             ENetEvent netEvent;
-            int net = enet_host_service(m_Client, &netEvent, 500);
+            enet_host_service(m_Client, &netEvent, 500);
 
             if (netEvent.type == ENET_EVENT_TYPE_CONNECT)
             {
