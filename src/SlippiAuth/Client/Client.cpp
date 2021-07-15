@@ -4,7 +4,7 @@
 
 namespace SlippiAuth {
 
-    Client::Client(uint32_t id) :
+    Client::Client(uint16_t id) :
         m_Id(id),
         m_Config(ClientConfig::Get()[id]),
         m_State(ProcessState::Idle) {}
@@ -45,12 +45,11 @@ namespace SlippiAuth {
                     HandleSearching();
                     break;
                 }
-                case ProcessState::ConnectionSuccess:
+                case ProcessState::FoundOpponent:
                 {
-                    AuthenticatedEvent authenticatedEvent(m_DiscordId, m_TargetConnectCode);
-                    m_EventCallback(authenticatedEvent);
                     TerminateConnection();
                     m_Searching = false;
+                    HandleConnecting();
                     break;
                 }
                 case ProcessState::Timeout:
@@ -61,6 +60,13 @@ namespace SlippiAuth {
                     m_Searching = false;
                     break;
                 }
+                case ProcessState::ConnectionSuccess:
+                {
+                    AuthenticatedEvent authenticatedEvent(m_DiscordId, m_TargetConnectCode);
+                    m_EventCallback(authenticatedEvent);
+                    break;
+                }
+
                 case ProcessState::ErrorEncountered:
                 {
                     SlippiErrorEvent slippiErrorEvent(m_DiscordId, m_TargetConnectCode);
@@ -316,9 +322,55 @@ namespace SlippiAuth {
         {
             if (player["connectCode"] == m_TargetConnectCode)
             {
-                m_State = ProcessState::ConnectionSuccess;
+                m_State = ProcessState::FoundOpponent;
+
+                std::string fullIpAddress = player["ipAddress"];
+
+                // Get ip address
+                m_Remote.host = fullIpAddress.substr(0, fullIpAddress.find(':'));
+
+                fullIpAddress.erase(0, fullIpAddress.find(':') + 1);
+
+                // Get port
+                m_Remote.port = std::stoi(fullIpAddress.substr(0, fullIpAddress.find(':')));
+
+                CLIENT_INFO(m_Id, "Remote ip is {}:{}", m_Remote.host, m_Remote.port);
                 CLIENT_INFO(m_Id, "Successfully authenticated!");
+
                 return;
+            }
+        }
+    }
+
+    void Client::HandleConnecting()
+    {
+        ENetAddress addr;
+        enet_address_set_host(&addr, m_Remote.host.c_str());
+        addr.port = m_Remote.port;
+
+        ENetAddress localaddr;
+        localaddr.host = ENET_HOST_ANY;
+        localaddr.port = m_HostPort;
+
+        m_Client = enet_host_create(&localaddr, 10, 3, 0, 0);
+        m_Opponent = enet_host_connect(m_Client, &addr, 3, 0);
+
+        if (m_Client == nullptr)
+            CLIENT_ERROR(m_Id, "m_Client is NULL!");
+
+        if (m_Opponent == nullptr)
+            CLIENT_ERROR(m_Id, "m_Opponent is NULL!");
+
+        bool connected = false;
+        while (!connected)
+        {
+            ENetEvent netEvent;
+            int net = enet_host_service(m_Client, &netEvent, 500);
+
+            if (netEvent.type == ENET_EVENT_TYPE_CONNECT)
+            {
+                connected = true;
+                m_State = ProcessState::ConnectionSuccess;
             }
         }
     }

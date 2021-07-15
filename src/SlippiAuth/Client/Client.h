@@ -5,27 +5,50 @@
 
 #include <enet/enet.h>
 
-namespace SlippiAuth {
+namespace SlippiAuth
+{
 
     enum class ProcessState
     {
         Idle,
         Initializing,
         Matchmaking,
+        FoundOpponent,
         ConnectionSuccess,
         ErrorEncountered,
         Timeout,
     };
 
+    enum class SlippiConnectStatus
+    {
+        NET_CONNECT_STATUS_UNSET,
+        NET_CONNECT_STATUS_INITIATED,
+        NET_CONNECT_STATUS_CONNECTED,
+        NET_CONNECT_STATUS_FAILED,
+        NET_CONNECT_STATUS_DISCONNECTED,
+    };
+
     class Client
     {
     public:
-        explicit Client(uint32_t id);
+        explicit Client(uint16_t id);
+
         ~Client();
 
-        [[nodiscard]] bool IsReady() const { return m_Ready; }
-        [[nodiscard]] uint32_t GetId() const { return m_Id; }
-        [[nodiscard]] Json& GetConfig() { return m_Config; }
+        [[nodiscard]] bool IsReady() const
+        {
+            return m_Ready;
+        }
+
+        [[nodiscard]] uint16_t GetId() const
+        {
+            return m_Id;
+        }
+
+        [[nodiscard]] Json& GetConfig()
+        {
+            return m_Config;
+        }
 
         void PreStart(const std::string& connectCode, uint32_t timeout, uint64_t discordId)
         {
@@ -44,17 +67,19 @@ namespace SlippiAuth {
 
     private:
         void SendMessage(const Json& msg);
-        int ReceiveMessage(Json &msg, int timeoutMs);
+        int ReceiveMessage(Json& msg, int timeoutMs);
 
         void DisconnectFromServer();
         void TerminateConnection();
 
         void StartSearching();
         void HandleSearching();
+        void HandleConnecting();
+
     private:
         bool m_Ready = true;
 
-        uint32_t m_Id;
+        uint16_t m_Id;
 
         // Connect code the client has to connect to
         std::string m_TargetConnectCode;
@@ -63,7 +88,7 @@ namespace SlippiAuth {
 
         const std::string m_AppVersion = "2.3.1";
 
-        Json m_Config = {};
+        Json m_Config{};
 
         bool m_Connected = false;
         bool m_Searching = false;
@@ -71,18 +96,25 @@ namespace SlippiAuth {
         const std::string m_ServerHost = "mm.slippi.gg";
         const uint16_t m_ServerPort = 43113;
 
-        uint16_t m_HostPort = 0;
+        uint16_t m_HostPort{};
+
+        struct Remote
+        {
+            std::string host;
+            uint16_t port;
+        } m_Remote{};
 
         ENetHost* m_Client = nullptr;
         ENetPeer* m_Server = nullptr;
+        ENetPeer* m_Opponent = nullptr;
 
         EventCallbackFn m_EventCallback;
 
         // Timeout in seconds
-        uint32_t m_Timeout;
+        uint32_t m_Timeout{};
 
         // For codeman purposes
-        uint64_t m_DiscordId;
+        uint64_t m_DiscordId{};
     };
 
 }
