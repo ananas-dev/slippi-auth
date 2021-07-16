@@ -13,7 +13,6 @@ namespace SlippiAuth
         Idle,
         Initializing,
         Matchmaking,
-        FoundOpponent,
         ConnectionSuccess,
         ErrorEncountered,
         Timeout,

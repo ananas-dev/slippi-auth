@@ -32,52 +32,57 @@ namespace SlippiAuth {
 
             switch (m_State)
             {
-            case ProcessState::Initializing:
-            {
-                StartSearching();
-                SearchingEvent clientSpawnEvent(m_DiscordId, m_Config["connectCode"], m_TargetConnectCode);
-                m_EventCallback(clientSpawnEvent);
-                break;
-            }
-            case ProcessState::Matchmaking:
-            {
-                HandleSearching();
-                break;
-            }
-            case ProcessState::FoundOpponent:
-            {
-                Disconnect();
-                HandleConnecting();
-                break;
-            }
-            case ProcessState::ConnectionSuccess:
-            {
-                AuthenticatedEvent authenticatedEvent(m_DiscordId, m_TargetConnectCode);
-                m_EventCallback(authenticatedEvent);
-                Disconnect();
-                m_Searching = false;
-                break;
-            }
-            case ProcessState::Timeout:
-            {
-                TimeoutEvent timeoutEvent(m_DiscordId, m_TargetConnectCode);
-                m_EventCallback(timeoutEvent);
-                Disconnect();
-                m_Searching = false;
-                break;
-            }
-
-            case ProcessState::ErrorEncountered:
+                case ProcessState::Initializing:
                 {
-                    SlippiErrorEvent slippiErrorEvent(m_DiscordId, m_TargetConnectCode);
-                    m_EventCallback(slippiErrorEvent);
+                    StartSearching();
+
+                    SearchingEvent clientSpawnEvent(m_DiscordId, m_Config["connectCode"], m_TargetConnectCode);
+                    m_EventCallback(clientSpawnEvent);
+
+                    break;
+                }
+                case ProcessState::Matchmaking:
+                {
+                    HandleSearching();
+                    break;
+                }
+                case ProcessState::ConnectionSuccess:
+                {
+                    // Will clean the server connection
                     Disconnect();
+
+                    AuthenticatedEvent authenticatedEvent(m_DiscordId, m_TargetConnectCode);
+                    m_EventCallback(authenticatedEvent);
+
+                    HandleConnecting();
+                    // Will clean the opponent connection
+                    Disconnect();
+
                     m_Searching = false;
                     break;
                 }
-                default:
-                    m_State = ProcessState::ErrorEncountered;
-            }
+                case ProcessState::Timeout:
+                {
+                    TimeoutEvent timeoutEvent(m_DiscordId, m_TargetConnectCode);
+                    m_EventCallback(timeoutEvent);
+
+                    Disconnect();
+
+                    m_Searching = false;
+                    break;
+                }
+
+                case ProcessState::ErrorEncountered:
+                    {
+                        SlippiErrorEvent slippiErrorEvent(m_DiscordId, m_TargetConnectCode);
+                        m_EventCallback(slippiErrorEvent);
+                        Disconnect();
+                        m_Searching = false;
+                        break;
+                    }
+                    default:
+                        m_State = ProcessState::ErrorEncountered;
+                }
         }
 
         m_State = ProcessState::Idle;
@@ -370,7 +375,7 @@ namespace SlippiAuth {
         {
             if (player["connectCode"] == m_TargetConnectCode)
             {
-                m_State = ProcessState::FoundOpponent;
+                m_State = ProcessState::ConnectionSuccess;
 
                 std::string fullIpAddress = player["ipAddress"];
 
@@ -409,19 +414,13 @@ namespace SlippiAuth {
         if (m_Opponent == nullptr)
             CLIENT_ERROR(m_Id, "m_Opponent is NULL!");
 
-        bool connected = false;
-        int maxAttempts = 15;
-
-        for (int i = 0; !connected && (i < maxAttempts); i++)
+        for (int i = 0; i < 15; i++)
         {
             ENetEvent netEvent;
             enet_host_service(m_Client, &netEvent, 500);
 
             if (netEvent.type == ENET_EVENT_TYPE_CONNECT)
-            {
-                connected = true;
-                m_State = ProcessState::ConnectionSuccess;
-            }
+                break;
         }
     }
 }

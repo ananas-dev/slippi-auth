@@ -15,7 +15,6 @@ namespace SlippiAuth {
     {
     public:
         explicit Server(uint16_t port);
-        ~Server();
 
         void OnEvent(Event& e);
         inline void SetEventCallback(const EventCallbackFn& callback)

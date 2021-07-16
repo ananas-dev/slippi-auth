@@ -1,7 +1,5 @@
 #include "Server.h"
 
-#include <nlohmann/json.hpp>
-
 namespace SlippiAuth
 {
     Server::Server(uint16_t port) : m_Port(port)
@@ -39,10 +37,6 @@ namespace SlippiAuth
         m_Server.clear_access_channels(websocketpp::log::alevel::frame_payload);
         m_Server.clear_access_channels(websocketpp::log::alevel::frame_header);
         m_Server.clear_access_channels(websocketpp::log::alevel::message_header);
-    }
-
-    Server::~Server()
-    {
     }
 
     void Server::OnEvent(Event& e)

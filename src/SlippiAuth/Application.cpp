@@ -26,15 +26,6 @@ namespace SlippiAuth {
 
     Application::~Application() = default;
 
-    // TODO: Implement the application events
-    void Application::OnEvent(Event& e)
-    {
-        CORE_TRACE(e);
-        EventDispatcher dispatcher(e);
-
-        // App events
-    }
-
     void Application::Run()
     {
         m_Server.Start();
