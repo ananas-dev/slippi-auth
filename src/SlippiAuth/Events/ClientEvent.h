@@ -46,9 +46,11 @@ namespace SlippiAuth {
     class AuthenticatedEvent : public Event
     {
     public:
-        explicit AuthenticatedEvent(uint64_t discordId, std::string userConnectCode)
+        explicit AuthenticatedEvent(uint64_t discordId, std::string userConnectCode, std::string userName, std::string userIp)
             : m_DiscordId(discordId),
-            m_UserConnectCode(std::move(userConnectCode)) {};
+            m_UserConnectCode(std::move(userConnectCode)),
+            m_UserName(std::move(userName)),
+            m_UserIp(std::move(userIp)) {};
 
         [[nodiscard]] inline uint64_t GetDiscordId() const
         {
@@ -60,11 +62,22 @@ namespace SlippiAuth {
             return m_UserConnectCode;
         }
 
+        inline const std::string& GetUserName()
+        {
+            return m_UserName;
+        }
+
+        inline const std::string& GetUserIp()
+        {
+            return m_UserIp;
+        }
+
         [[nodiscard]] std::string ToString() const override
         {
             std::stringstream ss;
             ss << "AuthenticatedEvent: " << "(" << m_DiscordId
-               << ", " << m_UserConnectCode << ")";
+               << ", " << m_UserConnectCode << ", " << m_UserName
+               << ", " << m_UserIp << ")";
             return ss.str();
         }
 
@@ -73,6 +86,8 @@ namespace SlippiAuth {
     private:
         uint64_t m_DiscordId;
         std::string m_UserConnectCode;
+        std::string m_UserName;
+        std::string m_UserIp;
     };
 
     class SlippiErrorEvent : public Event

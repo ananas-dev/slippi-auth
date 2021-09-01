@@ -106,6 +106,9 @@ namespace SlippiAuth
 
         // For codeman purposes
         uint64_t m_DiscordId{};
+
+        // For tournament purposes
+        std::string m_UserName{};
     };
 
 }

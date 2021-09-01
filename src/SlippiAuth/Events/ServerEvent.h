@@ -30,7 +30,7 @@ namespace SlippiAuth {
         [[nodiscard]] std::string ToString() const override
         {
             std::stringstream ss;
-            ss << "QueueEvent: (" << m_UserConnectCode << ", " << m_Timeout << ")";
+            ss << "QueueEvent: (" << m_DiscordId << m_UserConnectCode << ", " << m_Timeout << ")";
             return ss.str();
         }
 

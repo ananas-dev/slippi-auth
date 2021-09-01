@@ -33,10 +33,7 @@ namespace SlippiAuth
         m_Server.listen(port);
 
         // Set logger
-        m_Server.set_access_channels(websocketpp::log::alevel::all);
-        m_Server.clear_access_channels(websocketpp::log::alevel::frame_payload);
-        m_Server.clear_access_channels(websocketpp::log::alevel::frame_header);
-        m_Server.clear_access_channels(websocketpp::log::alevel::message_header);
+        m_Server.clear_access_channels(websocketpp::log::elevel::rerror);
     }
 
     void Server::OnEvent(Event& e)
@@ -69,7 +66,9 @@ namespace SlippiAuth
         Json message = {
                 {"type", "authenticated"},
                 {"discordId", e.GetDiscordId()},
-                {"userCode", e.GetUserConnectCode()}
+                {"userCode", e.GetUserConnectCode()},
+                {"userName", e.GetUserName()},
+                {"userIp", e.GetUserIp()}
         };
 
         SendMessage(message);
@@ -114,6 +113,7 @@ namespace SlippiAuth
 
     void Server::OnOpen(const websocketpp::connection_hdl& hdl)
     {
+        SERVER_INFO("A websocket client connected");
         m_ConnectionHandles.push_back(hdl);
     }
 
@@ -121,12 +121,11 @@ namespace SlippiAuth
     {
         try
         {
-            SERVER_INFO("Websocket message received: {}", msg->get_payload());
-
             // Deserialize json
             try
             {
                 Json message = Json::parse(msg->get_payload());
+                SERVER_TRACE("Received {} message", message["type"]);
 
                 if (message["type"] == "queue")
                 {
@@ -170,6 +169,8 @@ namespace SlippiAuth
 
     void Server::OnClose(const websocketpp::connection_hdl& hdl)
     {
+        SERVER_INFO("A websocket client disconnected");
+
         auto iter = std::find_if(m_ConnectionHandles.begin(), m_ConnectionHandles.end(),
                 [=](const websocketpp::connection_hdl& hdl2)
                 {

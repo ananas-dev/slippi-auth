@@ -18,8 +18,6 @@ namespace SlippiAuth {
 
     void Client::Start()
     {
-        CLIENT_INFO(m_Id, "Starting [{}]...", m_Config["connectCode"].get<std::string>());
-
         m_State = ProcessState::Initializing;
         m_Searching = true;
 
@@ -51,7 +49,13 @@ namespace SlippiAuth {
                     // Will clean the server connection
                     Disconnect();
 
-                    AuthenticatedEvent authenticatedEvent(m_DiscordId, m_TargetConnectCode);
+                    AuthenticatedEvent authenticatedEvent(
+                            m_DiscordId,
+                            m_TargetConnectCode,
+                            m_UserName,
+                            m_Remote.host
+                            );
+
                     m_EventCallback(authenticatedEvent);
 
                     HandleConnecting();
@@ -222,7 +226,6 @@ namespace SlippiAuth {
         while (m_Client == nullptr && retryCount < 15)
         {
             m_HostPort = 41000 + m_Id;
-            CLIENT_INFO(m_Id, "Port in use: {}", m_HostPort);
 
             ENetAddress clientAddr;
             clientAddr.host = ENET_HOST_ANY;
@@ -272,8 +275,6 @@ namespace SlippiAuth {
             }
 
             connected = true;
-
-            CLIENT_INFO(m_Id, "Connected to {}:{}", m_ServerHost, m_ServerPort);
         }
 
         // Buffering the connect code
@@ -288,7 +289,6 @@ namespace SlippiAuth {
         {
             Json responseJson = Json::parse(slippiApiResp.text);
             m_SlippiLatestVersion = responseJson["latestVersion"];
-            CLIENT_INFO(m_Id, "Using Slippi version {}", m_SlippiLatestVersion);
         }
         else
         {
@@ -331,7 +331,6 @@ namespace SlippiAuth {
         }
 
         m_State = ProcessState::Matchmaking;
-        CLIENT_INFO(m_Id, "Searching [{}]...", m_TargetConnectCode);
     }
 
     void Client::HandleSearching()
@@ -387,8 +386,8 @@ namespace SlippiAuth {
                 // Get port
                 m_Remote.port = std::stoi(fullIpAddress.substr(0, fullIpAddress.find(':')));
 
-                CLIENT_INFO(m_Id, "Remote ip is {}:{}", m_Remote.host, m_Remote.port);
-                CLIENT_INFO(m_Id, "Successfully authenticated!");
+                // Get username
+                m_UserName = player["displayName"];
 
                 return;
             }

@@ -52,7 +52,6 @@ namespace SlippiAuth {
             if (client.IsReady())
                 return client.GetId();
         }
-        CORE_ERROR("No clients are ready");
         return -1;
     }
 
