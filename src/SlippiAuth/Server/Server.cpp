@@ -124,29 +124,33 @@ namespace SlippiAuth
             // Deserialize json
             try
             {
-                Json message = Json::parse(msg->get_payload());
-                SERVER_TRACE("Received {} message", message["type"]);
-
-                if (message["type"] == "queue")
-                {
-                    if (message.contains("userCode") && message.contains("timeout") && message.contains("discordId"))
+                auto payload = msg->get_payload();
+                if (payload == "ping") {
+                    m_Server.send(hdl, "pong", msg->get_opcode());
+                } else {
+                    Json message = Json::parse(payload);
+                    SERVER_TRACE("Received {} message", message["type"]);
+                    if (message["type"] == "queue")
                     {
-                    QueueEvent event(message["userCode"], message["timeout"], message["discordId"]);
-                        m_EventCallback(event);
+                        if (message.contains("userCode") && message.contains("timeout") && message.contains("discordId"))
+                        {
+                            QueueEvent event(message["userCode"], message["timeout"], message["discordId"]);
+                            m_EventCallback(event);
+                        }
+                        else
+                        {
+                            OnMissingArg(hdl, "code, timeout or discordId");
+                        }
+                    }
+                    else if (message["type"] == "stopListening")
+                    {
+                        m_Server.stop_listening();
                     }
                     else
                     {
-                        OnMissingArg(hdl, "code, timeout or discordId");
+                        Json response = {{"type", "unknownCommand"}};
+                        m_Server.send(hdl, response.dump(), msg->get_opcode());
                     }
-                }
-                else if (message["type"] == "stopListening")
-                {
-                    m_Server.stop_listening();
-                }
-                else
-                {
-                    Json response = {{"type", "unknownCommand"}};
-                    m_Server.send(hdl, response.dump(), msg->get_opcode());
                 }
             }
             catch (const nlohmann::detail::parse_error& e)
