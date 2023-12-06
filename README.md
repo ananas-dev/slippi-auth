@@ -80,7 +80,8 @@ The response of the server will contain the queued connect code and depends on t
 
 ```json
 {
-    "type": "err"
+    "type": "err",
+    "code": "XXX#123"
 }
 ```
 
@@ -88,6 +89,7 @@ The response of the server will contain the queued connect code and depends on t
 
 ```json
 {
-    "type": "full"
+    "type": "full",
+    "code": "XXX#123"
 }
 ```
