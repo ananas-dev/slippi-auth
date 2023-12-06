@@ -22,7 +22,7 @@ Queue an user:
 {
     "type": "queue",
     "code": "XXX#123",
-    "timeout": 60000, // in ms
+    "timeout": 60000
 }
 ```
 
@@ -33,7 +33,7 @@ User has been authenticated:
 ```json
 {
     "type": "success",
-    "code": "XXX#123",
+    "code": "XXX#123"
 }
 ```
 
@@ -42,7 +42,7 @@ The authentication timed out:
 ```json
 {
     "type": "timeout",
-    "code": "XXX#123",
+    "code": "XXX#123"
 }
 ```
 
@@ -50,7 +50,7 @@ There was an error:
 
 ```json
 {
-    "type": "err",
+    "type": "err"
 }
 ```
 
@@ -58,6 +58,6 @@ There are no available authentication clients:
 
 ```json
 {
-    "type": "full",
+    "type": "full"
 }
 ```
