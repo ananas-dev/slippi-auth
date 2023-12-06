@@ -78,7 +78,7 @@ A user got authenticated:
   "type": "authenticated",
   "discordId": 582645006100201485,
   "userCode": "XXX#123",
-  "userIp: "XX.XX.XX.XXX",
+  "userIp": "XX.XX.XX.XXX",
   "userName": "Ananas"
 }
 ```
