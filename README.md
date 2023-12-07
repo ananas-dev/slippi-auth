@@ -42,7 +42,7 @@ Nothing to do.
 apt install libenet-dev
 ```
 
-- Mac
+- Mac:
 ```sh
 brew install enet
 ```
