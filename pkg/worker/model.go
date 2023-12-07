@@ -1,10 +1,5 @@
 package worker
 
-type WorkerResult struct {
-	Type        string `json:"type"`
-	ConnectCode string `json:"code"`
-}
-
 type SlippiCreateTicket struct {
 	Type         string       `json:"type"`
 	User         SlippiUser   `json:"user"`

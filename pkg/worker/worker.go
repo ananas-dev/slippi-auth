@@ -84,7 +84,7 @@ func rcv(host *enet.Host, response interface{}, timeoutMs int) error {
 	return errors.New("timeout exceded")
 }
 
-func SlippiWorker(id int, uid string, key string, jobs <-chan Job, results chan<- WorkerResult) {
+func SlippiWorker(id int, uid string, key string, jobs <-chan Job, results chan<- Result) {
 	for j := range jobs {
 		log.Println(j)
 
@@ -96,14 +96,16 @@ func SlippiWorker(id int, uid string, key string, jobs <-chan Job, results chan<
 		client, err := enet.NewHost(enet.NewListenAddress(hostPort), 1, 3, 0, 0)
 
 		if err != nil {
-			fmt.Println("Could not create client")
+			fmt.Println("Error: Could not create client")
+			results <- Result{Type: Err, AuthCode: "", Code: j.Code}
 			continue
 		}
 
 		server, err := client.Connect(enet.NewAddress(SlippiHost, SlippiPort), 3, 0)
 
 		if err != nil {
-			fmt.Println("Could not create server")
+			fmt.Println("Error: Could not create server")
+			results <- Result{Type: Err, AuthCode: "", Code: j.Code}
 			continue
 		}
 
@@ -112,9 +114,12 @@ func SlippiWorker(id int, uid string, key string, jobs <-chan Job, results chan<
 		slippiApiResponse := <-slippiApiChan
 
 		if slippiApiResponse == nil {
-			fmt.Println("No response from slippi api")
+			fmt.Println("Error: No response from slippi api")
+			results <- Result{Type: Err, AuthCode: "", Code: j.Code}
 			continue
 		}
+
+		authCode := slippiApiResponse.ConnectCode
 
 		ticket := SlippiCreateTicket{
 			Type: "create-ticket",
@@ -132,12 +137,14 @@ func SlippiWorker(id int, uid string, key string, jobs <-chan Job, results chan<
 			IPAddressLAN: "127.0.0.1:" + strconv.FormatInt(int64(41000+id), 10),
 		}
 
-		log.Printf("[%s] searching for %s\n", slippiApiResponse.ConnectCode, j.Code)
+		log.Printf("[%s] searching for %s\n", authCode, j.Code)
+		results <- Result{Type: Searching, AuthCode: authCode, Code: j.Code}
 
 		ticket_bytes, err := json.Marshal(ticket)
 
 		if err != nil {
-			fmt.Println(err)
+			fmt.Println("Error:", err)
+			results <- Result{Type: Err, AuthCode: authCode, Code: j.Code}
 			continue
 		}
 
@@ -147,7 +154,8 @@ func SlippiWorker(id int, uid string, key string, jobs <-chan Job, results chan<
 		err = rcv(&client, &createTicketResp, 5000)
 
 		if err != nil {
-			fmt.Println(err)
+			fmt.Println("Error:", err)
+			results <- Result{Type: Err, AuthCode: authCode, Code: j.Code}
 			continue
 		}
 
@@ -155,7 +163,8 @@ func SlippiWorker(id int, uid string, key string, jobs <-chan Job, results chan<
 		err = rcv(&client, &getTicketResp, j.Timeout)
 
 		if err != nil {
-			fmt.Println(err)
+			fmt.Println("Error:", err)
+			results <- Result{Type: Timeout, AuthCode: authCode, Code: j.Code}
 			continue
 		}
 
@@ -164,10 +173,9 @@ func SlippiWorker(id int, uid string, key string, jobs <-chan Job, results chan<
 		for _, player := range getTicketResp.Players {
 			if player.ConnectCode == j.Code {
 				user = player
+				results <- Result{Type: Success, AuthCode: authCode, Code: j.Code}
 			}
 		}
-
-		results <- WorkerResult{Type: "success", ConnectCode: user.ConnectCode}
 
 		disconnect(&client, &server)
 
@@ -187,14 +195,14 @@ func SlippiWorker(id int, uid string, key string, jobs <-chan Job, results chan<
 
 		port, err := strconv.Atoi(portStr)
 		if err != nil {
-			fmt.Println("Error converting port to int:", err)
+			fmt.Println("Error:", err)
 			continue
 		}
 
 		opponent, err := client.Connect(enet.NewAddress(host, uint16(port)), 3, 0)
 
 		if err != nil {
-			fmt.Println(err)
+			fmt.Println("Error:", err)
 			continue
 		}
 

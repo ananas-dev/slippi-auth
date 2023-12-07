@@ -3,10 +3,11 @@ package main
 import (
 	"encoding/json"
 	"log"
+	"net/http"
 	"os"
-	"time"
 
 	"github.com/ananas-dev/slippi-auth/pkg/worker"
+	"github.com/ananas-dev/slippi-auth/pkg/ws"
 	"github.com/codecat/go-enet"
 )
 
@@ -42,17 +43,11 @@ func main() {
 	}
 
 	pool := worker.WorkerPool{}
-
 	pool.Start(clients)
 
-	select {
-	case pool.Jobs <- worker.Job{Code: "RULE#34", Timeout: 300000}:
-		log.Println("New task queued")
-	default:
-		log.Println("Clients full")
-	}
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		ws.ServeWs(&pool, w, r)
+	})
 
-	for {
-		time.Sleep(time.Second)
-	}
+	http.ListenAndServe(":9002", nil)
 }

@@ -32,10 +32,12 @@ cd slippi-auth
 ]
 ```
 
-3. Run the service:
+3. Install the Enet library
+
+4. Run the service:
 
 ```sh
-go run https://github.com/ananas-dev/slippi-auth
+go run cmd/slippi-auth/main.go
 ```
 
 ## Usage
@@ -54,9 +56,21 @@ First you have to send the connected code of the user you want to authenticate a
 }
 ```
 
-### Server response
+### Searching
 
-The response of the server will contain the queued connect code and depends on the outcome:
+When the server will start searching for the user, it will send this message containing the auth connect code:
+
+```json
+{
+    "type": "searching",
+    "auth-code": "AUTH#321",
+    "code": "XXX#123"
+}
+
+
+### Outcome
+
+The outcome of the authentication will contain the queued connect code:
 
 ✅ User has been authenticated
 
