@@ -66,6 +66,7 @@ When the server will start searching for the user, it will send this message con
     "auth-code": "AUTH#321",
     "code": "XXX#123"
 }
+```
 
 
 ### Outcome
