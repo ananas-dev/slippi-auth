@@ -32,7 +32,20 @@ cd slippi-auth
 ]
 ```
 
-3. Install the Enet library
+3. Install ENET:
+
+- Windows:
+Nothing to do.
+
+- Debian Based Linux:
+```sh
+apt install libenet-dev
+```
+
+- Mac
+```sh
+brew install enet
+```
 
 4. Run the service:
 
@@ -56,7 +69,7 @@ First you have to send the connected code of the user you want to authenticate a
 }
 ```
 
-### Searching
+### Receive the auth connect code
 
 When the server will start searching for the user, it will send this message containing the auth connect code:
 
