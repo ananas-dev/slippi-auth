@@ -6,6 +6,9 @@ An (unoffical) authenticator for slippi accounts.
 
 Slippi-auth is a service that provides authentication using a slippi account. It works by faking a netplay player which the person wanting to authentify has to connect to in direct mode.
 
+> [!WARNING]\
+> Because the traffic is not encrypted between the slippi servers and slippi-auth, if an attacker gains privilege on the network of your sever he can authentify as anyone. I would therefore not use this auth for sensible data.
+
 ## Installation
 
 1. Clone the repo:
